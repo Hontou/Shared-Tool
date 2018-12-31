@@ -48,15 +48,16 @@ class User:
         userId = uuid.uuid4().hex
         newUser = User(userId, userForename, userSurname, userAddress, userEmail, userPassword)
         newUser.buildFile()
-        return userId
+        return userId      
+            
       #-------------------------------File/Text Documentation Functions-------------------------------#
     def readFile(self):
         filePath = self.Path()
         fileName = filePath + str(self.user_forename +' '+ self.user_surname)
         with open(fileName + '.txt' , 'r') as myfile:
-            data = myfile.read()
-            print(data)
-
+            data = myfile.readlines()
+            #print(data[1])
+        
     def buildFile(self):
         filePath = self.Path()
         self.createUserFile(filePath)
@@ -70,8 +71,7 @@ class User:
     def writeUTF(self, fileName):      
         output_file = open(fileName + '.txt', 'w')
         output_file.write(self.user_id + '\n'
-                          + self.user_forename + '\n'
-                          + self.user_surname + '\n'
+                          + self.user_forename + ' ' + self.user_surname + '\n'
                           + self.user_address + '\n'
                           + self.user_email + '\n'
                           + self.user_password + '\n')
@@ -91,18 +91,26 @@ def createNewUser():
     user = User.createUser(userForename, userSurname, userAddress,userEmail,userPassword)
     print('New user with id: ' + str(user) + ' created.')
 
-def listAllUsers():
-    userList = User.getAllUsers()
-
-    for user in userList():
-        print(user)
+def AllUsers():
+    filePath = User.Path('userdata')
+    stored = []
+    for file in os.listdir(filePath):
+        if file.endswith(".txt"):
+            with open(filePath+file,'r') as myfile:
+                data = myfile.readlines()
+                data = data[1].strip('\n')
+                stored.append(data)
+    print(', '.join(stored))
 
 def __main__():
     x = input('> ')
     if x == '1':
         createNewUser()
     if x == '2':
-        listAllUsers()
-
+        AllUsers()
+    if x == '7':
+        pass
+    else:
+        __main__()
 
 __main__()
