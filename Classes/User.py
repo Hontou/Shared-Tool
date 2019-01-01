@@ -98,8 +98,9 @@ def AllUsers():
         if file.endswith(".txt"):
             with open(filePath+file,'r') as myfile:
                 data = myfile.readlines()
-                data = data[1].strip('\n')
-                stored.append(data)
+                data = data[1].strip('\n') #stored names in memory,
+                                           #could be a class but im lazy
+                stored.append(data) 
     print(', '.join(stored))
 
 def __main__():
