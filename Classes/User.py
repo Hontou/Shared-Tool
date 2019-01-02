@@ -1,6 +1,6 @@
 import os
 import uuid
-
+from Tool import *
 class User:
     #---------------------------------------Constructors--------------------------------------#
     def __init__(self, userId, userForename = '', userSurname = '', userAddress = '', userEmail= '', userPassword = ''):
@@ -100,18 +100,40 @@ def AllUsers():
                 data = myfile.readlines()
                 data = data[1].strip('\n') #stored names in memory,
                                            #could be a class but im lazy
-                stored.append(data) 
-    print(', '.join(stored))
+                stored.append(data)
+    print(stored)
+    return stored
+
+def SelectUser(toolOwner,stored):
+    if str(toolOwner) in stored:
+        return toolOwner
+    
+    
+def createNewTool():
+    toolName = input('> Name: ')
+    toolBrand = input('> Brand: ')
+    DayRate = input('> Day Rate: ')
+    stored = AllUsers()
+    toolOwner = input('> Select a Owner: ')
+    SelectUser(toolOwner, stored)
+    tool = Tool.createTool(toolName, toolBrand,toolOwner,DayRate)
+    print('New user with the owner: ' + str(toolOwner) + ' is created.')
 
 def __main__():
+    print('1 = Create User')
+    print('2 = View all Users')
+    print('3 = Create Tool')
     x = input('> ')
     if x == '1':
         createNewUser()
     if x == '2':
         AllUsers()
+    if x == '3':
+        createNewTool()
     if x == '7':
         pass
     else:
         __main__()
+        
 
 __main__()
