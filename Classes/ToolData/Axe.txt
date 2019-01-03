@@ -1,4 +1,4 @@
 Axe
-x
-5
+Company
+10 
 Henry Cheuk
