@@ -2,7 +2,7 @@ import os
 import uuid
 from User import *
 class Tool:
-
+    #---------------------------------------Constructors--------------------------------------#
     def __init__(self, toolName, toolBrand, toolOwner = '', dayRate = 0):
 
         self.tool_name = toolName
@@ -17,7 +17,10 @@ class Tool:
     def __repr__(self):
         var += self.tool_name + '\n' + self.tool_brand + '\n' + str(self.day_rate)
         return var
-#------------------------------------------------------------------
+    #------------------------------------------------------------------------------------------#
+    #-------------------------------Class Functions--------------------------------------------#
+
+    #-------------------------------
     def getToolName(self):
         return self.tool_name
 
@@ -29,27 +32,28 @@ class Tool:
 
     def getDayRate(self):
         return self.day_rate
+    #-------------------------------
     
-    def createTool(toolName, toolBrand, toolOwner, dayRate):
+    def createTool(toolName, toolBrand, toolOwner, dayRate):  #Tool creation with 4 inputs
         
         nTool = Tool(toolName, toolBrand, toolOwner, dayRate)
         
         nTool.buildFile()
-        filePath = Tool.Path('tooldata')
-        storedtools = []
-        for file in os.listdir(filePath):
-            if file.endswith(".txt"):
-                with open(filePath+file,'r') as myfile:
-                    tooldata = myfile.readlines()
-                    tooldata = tooldata[1].strip('\n') #stored names in memory,
-                                                       #could be a class but im lazy
-                    storedtools.append(tooldata)        
+        #filePath = Tool.Path('tooldata')
+        #storedtools = [] #empty list to store
+        #for file in os.listdir(filePath):
+        #    if file.endswith(".txt"): #searching through all .txt files
+        #        with open(filePath+file,'r') as myfile:
+        #            tooldata = myfile.readlines()
+        #            tooldata = tooldata[1].strip('\n')
+        #            storedtools.append(tooldata)
+        #            print(storedtools)
 #------------------------------------------------------------------
     def readFile(self):
         filePath = self.Path()
         fileName = filePath + str(self.toolName)
         with open(fileName + '.txt' , 'r') as myfile:
-            data = myfile.readlines()
+            data = myfile.readlines()#reads line by line
         
     def buildFile(self):
         filePath = self.Path()

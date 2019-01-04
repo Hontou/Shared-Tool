@@ -15,12 +15,14 @@ def createNewTool():
     toolName = input('> Name: ')
     toolBrand = input('> Brand: ')
     DayRate = input('> Day Rate: ')
-    stored = AllUsers()
+    temp = AllUsers()
     toolOwner = input('> Select a Owner: ')
-    SelectUser(toolOwner, stored)
-    tool = Tool.createTool(toolName, toolBrand,toolOwner,DayRate)
-    print('New user with the owner: ' + str(toolOwner) + ' is created.')
-
+    if str(toolOwner) in temp:   
+        tool = Tool.createTool(toolName, toolBrand,toolOwner,DayRate)
+        print('New tool with the owner: ' + str(toolOwner) + ' is created.')
+    else:
+        print('Please try again.')
+        createNewTool()
 
 def AllUsers():
     filePath = User.Path('userdata')
@@ -35,9 +37,6 @@ def AllUsers():
     print(stored)
     return stored
 
-def SelectUser(toolOwner,stored):
-    if str(toolOwner) in stored:
-        return toolOwner
     
 def searchTool():  #Repetative but works.
     print('What would you like to search by?')
@@ -118,7 +117,6 @@ def searchTool():  #Repetative but works.
                 print('#############################################')
 
     else:
-        print('wrong input, back to main menu')
         __main__()
                          
 def __main__():
