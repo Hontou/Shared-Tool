@@ -1,6 +1,8 @@
 from User import *
 from Tool import *
 from Time import *#
+import datetime
+
 
 def createNewUser():
     userForename = input('> Forename: ')
@@ -16,15 +18,10 @@ def createNewTool():
     toolName = input('> Name: ')
     toolBrand = input('> Brand: ')
     DayRate = input('> Day Rate: ')
-    #temp
-    tempYesNo = input('> Add unavailable days? ')#
-    if tempYesNo == 'Y':#
-        bookD = addToolDates()##
-    else:#
-        bookD = ''#
-    temp = AllUsers()#
-    toolOwner = input('> Select a Owner: ')#
-    print(bookD)#
+    x = '14-11-1111'
+    bookD = hireTime()
+    temp = AllUsers()
+    toolOwner = input('> Select a Owner: ')
     if str(toolOwner) in temp:   
         tool = Tool.createTool(toolName, toolBrand,toolOwner,DayRate,bookD)
         print('New tool with the owner: ' + str(toolOwner) + ' is created.')
@@ -32,20 +29,39 @@ def createNewTool():
         print('Please try again.')
         createNewTool()
 
-#To Add Unavailable Dates############
-def addToolDates():
-    dCount = 0
-    tDateList=[]
-    while dCount == 0:
-        bookD1 = str(input('> Enter Date: '))
-        bookD2 = str(input('> Enter Close Date: '))
-        tDateList.append([bookD1, bookD2])
-        userTestt = input("> Would you like to add another unavailable period? (Y/N) ")
-        if userTestt == 'Y':
-            print("hi")
-        else:
-            dCount += 1
-    return tDateList
+    availableTimes(x)
+    
+
+def availableTimes(x):
+    fn = 'ToolData/1.txt'
+    f = open(fn)
+    output = []
+    for line in f:
+        if not x in line:
+            output.append(line)
+    f.close()
+    f = open("ToolData/1.txt", "w")
+    f.writelines(output)
+    f.close()
+    
+               
+                       
+    
+
+def hireTime():
+    #current_time = str(input('What date would you like to start enlisting this item? > DD-MM-YYYY > '))
+    #end_time = str(input('When would you like to stop enlisting this tool? DD-MM-YYYY > '))
+    start = datetime.datetime.strptime('11-11-1111', "%d-%m-%Y") 
+    end = datetime.datetime.strptime('29-11-1111', "%d-%m-%Y")#knocks 1 off the end date
+    date_generated = [start + datetime.timedelta(days=x) for x in range(0, (end-start).days)]
+    dList = []
+    for x in date_generated:
+        dList.append(x.strftime("%d-%m-%Y"))
+    return('\n'.join(dList))
+
+
+
+
 ###########
 def AllUsers():
     filePath = User.Path('userdata')

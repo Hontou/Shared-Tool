@@ -1,7 +1,10 @@
 import os
 import uuid
 from User import *
-from Time import *#
+from Time import *
+from datetime import *
+import itertools
+
 class Tool:
     #---------------------------------------Constructors--------------------------------------#
     def __init__(self, toolName, toolBrand, toolOwner = '', dayRate = 0, bookD = ''):#
@@ -13,11 +16,11 @@ class Tool:
         self.date = bookD#
 
     def __str__(self):
-        var += self.tool_name + '\n' + self.tool_brand + '\n' + str(self.day_rate)
+        var += self.tool_name + '\n' + self.tool_brand + '\n' + str(self.day_rate) + str(self.date) + '\n' 
         return var
 
     def __repr__(self):
-        var += self.tool_name + '\n' + self.tool_brand + '\n' + str(self.day_rate)
+        var += self.tool_name + '\n' + self.tool_brand + '\n' + str(self.day_rate) + str(self.date) +'\n' 
         return var
     #------------------------------------------------------------------------------------------#
     #-------------------------------Class Functions--------------------------------------------#
@@ -51,7 +54,6 @@ class Tool:
         #            storedtools.append(tooldata)
         #            print(storedtools)
 
-    
 
 #------------------------------------------------------------------
     def readFile(self):
@@ -76,15 +78,21 @@ class Tool:
                           + self.tool_brand + '\n'
                           + self.day_rate + '\n'
                           + self.tool_owner + '\n'
+                          + self.date + '\n'
                           )
-        #with open(fileName + '.txt', 'w') as myfile:  
+        #output_file = open('ToolData/Jeff' + '.txt', 'w')
+        #for i in dList:    
+        #output_file.write(i + '\n')
+
+        
+        #with open(fileName + '.txt', 'w') as myfile:
         #    openCount = 0
         #    tempoList = self.date
-         #   LenOList = len(tempoList)
-         #   for i in range(0, LenOList):
-         #       tempWriteo = str(tempoList.pop(openCount))
-         #       myfile.write(tempWriteo + '\n')
-          #      openCount +=1
+        #    LenOList = len(tempoList)
+        #    for i in range(0, LenOList):
+        #        tempWriteo = str(tempoList.pop(openCount))
+        #        myfile.write(tempWriteo + '\n')
+        #        openCount +=1
         
                 
 

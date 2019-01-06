@@ -17,4 +17,3 @@ def getDM():
     DM = DMT[0] + DMT[1] + DMT[2] + DMT[3]
     return DM
 
-print(getDM())
