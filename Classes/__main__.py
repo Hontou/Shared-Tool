@@ -1,5 +1,6 @@
 from User import *
 from Tool import *
+from Time import *#
 
 def createNewUser():
     userForename = input('> Forename: ')
@@ -15,15 +16,37 @@ def createNewTool():
     toolName = input('> Name: ')
     toolBrand = input('> Brand: ')
     DayRate = input('> Day Rate: ')
-    temp = AllUsers()
-    toolOwner = input('> Select a Owner: ')
+    #temp
+    tempYesNo = input('> Add unavailable days? ')#
+    if tempYesNo == 'Y':#
+        bookD = addToolDates()##
+    else:#
+        bookD = ''#
+    temp = AllUsers()#
+    toolOwner = input('> Select a Owner: ')#
+    print(bookD)#
     if str(toolOwner) in temp:   
-        tool = Tool.createTool(toolName, toolBrand,toolOwner,DayRate)
+        tool = Tool.createTool(toolName, toolBrand,toolOwner,DayRate,bookD)
         print('New tool with the owner: ' + str(toolOwner) + ' is created.')
     else:
         print('Please try again.')
         createNewTool()
 
+#To Add Unavailable Dates############
+def addToolDates():
+    dCount = 0
+    tDateList=[]
+    while dCount == 0:
+        bookD1 = str(input('> Enter Date: '))
+        bookD2 = str(input('> Enter Close Date: '))
+        tDateList.append([bookD1, bookD2])
+        userTestt = input("> Would you like to add another unavailable period? (Y/N) ")
+        if userTestt == 'Y':
+            print("hi")
+        else:
+            dCount += 1
+    return tDateList
+###########
 def AllUsers():
     filePath = User.Path('userdata')
     stored = []

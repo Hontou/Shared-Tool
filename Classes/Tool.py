@@ -1,14 +1,16 @@
 import os
 import uuid
 from User import *
+from Time import *#
 class Tool:
     #---------------------------------------Constructors--------------------------------------#
-    def __init__(self, toolName, toolBrand, toolOwner = '', dayRate = 0):
+    def __init__(self, toolName, toolBrand, toolOwner = '', dayRate = 0, bookD = ''):#
 
         self.tool_name = toolName
         self.tool_brand = toolBrand
         self.tool_owner = toolOwner
         self.day_rate = dayRate
+        self.date = bookD#
 
     def __str__(self):
         var += self.tool_name + '\n' + self.tool_brand + '\n' + str(self.day_rate)
@@ -34,9 +36,9 @@ class Tool:
         return self.day_rate
     #-------------------------------
     
-    def createTool(toolName, toolBrand, toolOwner, dayRate):  #Tool creation with 4 inputs
+    def createTool(toolName, toolBrand, toolOwner, dayRate, bookD):#  #Tool creation with 4 inputs
         
-        nTool = Tool(toolName, toolBrand, toolOwner, dayRate)
+        nTool = Tool(toolName, toolBrand, toolOwner, dayRate, bookD)#
         
         nTool.buildFile()
         #filePath = Tool.Path('tooldata')
@@ -48,6 +50,9 @@ class Tool:
         #            tooldata = tooldata[1].strip('\n')
         #            storedtools.append(tooldata)
         #            print(storedtools)
+
+    
+
 #------------------------------------------------------------------
     def readFile(self):
         filePath = self.Path()
@@ -71,7 +76,19 @@ class Tool:
                           + self.tool_brand + '\n'
                           + self.day_rate + '\n'
                           + self.tool_owner + '\n'
-                            )
+                          )
+        #with open(fileName + '.txt', 'w') as myfile:  
+        #    openCount = 0
+        #    tempoList = self.date
+         #   LenOList = len(tempoList)
+         #   for i in range(0, LenOList):
+         #       tempWriteo = str(tempoList.pop(openCount))
+         #       myfile.write(tempWriteo + '\n')
+          #      openCount +=1
+        
+                
+
+
         output_file.close()
         
     def Path(self):
