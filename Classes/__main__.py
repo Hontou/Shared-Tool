@@ -3,7 +3,20 @@ from Tool import *
 from Time import *#
 import datetime
 
+#REMOVE
+Token = "Thomas Law"
 
+def login():
+    email = 'micharin99@gmail.com'
+    password = '1234'
+    filePath = User.Path('userdata')
+    for file in os.listdir(filePath):
+        if file.endswith(".txt"):
+            with open(filePath+file,'r') as myfile:
+                data = myfile.readlines()
+                if email == str(data[3].strip('\n')):
+                    if password == str(data[4].strip('\n')):
+                        return data[1] 
 def createNewUser():
     userForename = input('> Forename: ')
     userSurname = input('> Surname: ')
@@ -46,15 +59,16 @@ def availableTimes(x):
                
 #Writing Dates to File
 def hireTime():
-    #current_time = str(input('What date would you like to start enlisting this item? > DD-MM-YYYY > '))
-    #end_time = str(input('When would you like to stop enlisting this tool? DD-MM-YYYY > '))
-    start = datetime.datetime.strptime('11-11-1111', "%d-%m-%Y") 
-    end = datetime.datetime.strptime('29-11-1111', "%d-%m-%Y")#knocks 1 off the end date
-    date_generated = [start + datetime.timedelta(days=x) for x in range(0, (end-start).days)]
+    start = str(input('What date would you like to start enlisting this item? > DD-MM-YYYY > '))
+    end = str(input('When would you like to stop enlisting this tool? DD-MM-YYYY > '))
+    start = datetime.datetime.strptime(start, "%d-%m-%Y") 
+    end = datetime.datetime.strptime(end, "%d-%m-%Y")
+    trueEnd = (end-start).days + 1
+    date_generated = [start + datetime.timedelta(days=x) for x in range(0, trueEnd)]
     dList = []
     for x in date_generated:
         dList.append(x.strftime("%d-%m-%Y"))
-    return('\n'.join(dList))
+    return(' \n'.join(dList))
 
 
 #
@@ -78,10 +92,6 @@ def bookIdentifier(identify, fileN, userID):
     f.writelines(tempStore)
     f.close()
 
-#for testing
-testList = ["15-11-1111", "16-11-1111", "17-11-1111", "20-11-1111"]
-bookIdentifier(testList, "rewritetest", "Alison Law")
-#
 
 #Finds all the lines with # in and prints
 def testBooked(fileN):
@@ -94,8 +104,61 @@ def testBooked(fileN):
             #should change in future to a more suitable way of showing
             print(line)
     f.close()
-#for testing
-testBooked("rewritetest")
+
+def hireTool(tool, Token):
+    print("The following days are available:")
+    checkDate = "ToolData/" + tool +".txt"
+    f = open(checkDate, "r")
+    tempStore = []
+    for line in f:
+        #2019+2020
+        if "1111 " in line:
+            tempStore.append(line.replace(" \n", ""))
+    print(tempStore)
+    f.close()
+    print("Please use the following format: dd-mm-yyyy")
+    start = input("What day would you like to start your booking? ")
+    start = datetime.datetime.strptime(start, "%d-%m-%Y")
+    end = input("What day would you like to end your booking? ")
+    end = datetime.datetime.strptime(end, "%d-%m-%Y")
+    seList = []
+    trueEnd = (end-start).days + 1
+    startEnd = [start + datetime.timedelta(days=x) for x in range(0, trueEnd)]
+    for x in startEnd:
+        seList.append(x.strftime("%d-%m-%Y"))
+    print(seList)
+    bookIdentifier(seList, tool, Token)
+
+    #Delivery Option
+    method = input("Would you like to pick the " + tool + " in person or arrange a delivery? (p/d) ")
+    if method == "p":
+        #getting the tool owners ID
+        f = open("ToolData/" + tool + ".txt", "r")
+        data = f.readlines()
+        tOwner = data[3].replace("\n", "")
+        f.close
+        #using the tool owners ID to find their address
+        f = open("UserData/" + tOwner + ".txt", "r")
+        data = f.readlines()
+        tAddress = data[2]
+        f.close
+        print("Their address is " +tAddress)
+    elif method == "d":
+        dCheck = input("You have chosen delivery, this be be an additonal £5 charge. Is that okay? (y/n) ")
+        if dCheck == "y":
+            #using user ID to find address
+            f = open("UserData/" + Token + ".txt", "r")
+            data = f.readlines()
+            bookee = data[2]
+            f.close
+            print("Thank you for your order, the " + tool + "will be delivered to " + bookee)
+        elif dCheck =="n":
+            print("")
+    
+    
+#FIND WAY TO INCLUDE USER ADDRESS
+hireTool("rewritetest", Token)
+
 
 ###########
 def AllUsers():
@@ -194,11 +257,15 @@ def searchTool():  #Repetative but works.
     else:
         __main__()
                          
+   
+
+
 def __main__():
     print('1 = Create User')
     print('2 = View all Users')
     print('3 = Create Tool')
     print('4 = Search Tool')
+    print('5 = Login')
     x = input('> ')
     if x == '1':
         createNewUser()
@@ -208,10 +275,14 @@ def __main__():
         createNewTool()
     if x == '4':
         searchTool()
+    if x == '5':
+        token = login()
+        
     if x == '7':
         pass
     else:
         __main__()
         
+
 
 __main__()
