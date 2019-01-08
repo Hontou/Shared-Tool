@@ -80,23 +80,7 @@ class Tool:
                           + self.tool_owner + '\n'
                           + self.date + '\n'
                           )
-        #output_file = open('ToolData/Jeff' + '.txt', 'w')
-        #for i in dList:    
-        #output_file.write(i + '\n')
-
         
-        #with open(fileName + '.txt', 'w') as myfile:
-        #    openCount = 0
-        #    tempoList = self.date
-        #    LenOList = len(tempoList)
-        #    for i in range(0, LenOList):
-        #        tempWriteo = str(tempoList.pop(openCount))
-        #        myfile.write(tempWriteo + '\n')
-        #        openCount +=1
-        
-                
-
-
         output_file.close()
         
     def Path(self):

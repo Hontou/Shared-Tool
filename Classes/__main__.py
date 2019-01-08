@@ -28,10 +28,9 @@ def createNewTool():
     else:
         print('Please try again.')
         createNewTool()
-
-    availableTimes(x)
     
 
+#Rewriting
 def availableTimes(x):
     fn = 'ToolData/1.txt'
     f = open(fn)
@@ -45,9 +44,7 @@ def availableTimes(x):
     f.close()
     
                
-                       
-    
-
+#Writing Dates to File
 def hireTime():
     #current_time = str(input('What date would you like to start enlisting this item? > DD-MM-YYYY > '))
     #end_time = str(input('When would you like to stop enlisting this tool? DD-MM-YYYY > '))
@@ -60,7 +57,45 @@ def hireTime():
     return('\n'.join(dList))
 
 
+#
+#Adding an identifier after booking
+def bookIdentifier(identify, fileN, userID):
+    addID = "ToolData/" + fileN +".txt"
+    f = open(addID, "r")
+    tempStore = []
+    count = 0
+    oor = len(identify) - 1
+    for line in f:
+        ID = identify[count]
+        if not ID in line:
+            tempStore.append(line)
+        if ID in line:
+            tempStore.append(ID + "#"+ userID + "\n")
+            if count < oor:
+                count+=1
+    f.close()
+    f = open(addID, "w")
+    f.writelines(tempStore)
+    f.close()
 
+#for testing
+testList = ["15-11-1111", "16-11-1111", "17-11-1111", "20-11-1111"]
+bookIdentifier(testList, "rewritetest", "Alison Law")
+#
+
+#Finds all the lines with # in and prints
+def testBooked(fileN):
+    findID = "ToolData/" + fileN + ".txt"
+    x = "#"
+    f = open(findID, "r")
+    tempStore = []
+    for line in f:
+        if x in line:
+            #should change in future to a more suitable way of showing
+            print(line)
+    f.close()
+#for testing
+testBooked("rewritetest")
 
 ###########
 def AllUsers():
@@ -154,6 +189,7 @@ def searchTool():  #Repetative but works.
                 print('#############################################')
                 print('Placeholder Availability')
                 print('#############################################')
+                
 
     else:
         __main__()
