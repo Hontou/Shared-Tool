@@ -44,6 +44,7 @@ class Tool:
         nTool = Tool(toolName, toolBrand, toolOwner, dayRate, bookD)#
         
         nTool.buildFile()
+        return toolName
         #filePath = Tool.Path('tooldata')
         #storedtools = [] #empty list to store
         #for file in os.listdir(filePath):

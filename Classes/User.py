@@ -19,7 +19,7 @@ class User:
 
     def __repr__(self):
 
-        var += str(self.user_id) + '\n'
+        var += str(self.user_forename) + '\n'
         var += self.user_forename + '\n' + self.user_surname + '\n' + self.user_address + '\n' + self.user_email + '\n' + self.password + '\n'
         return var
     #------------------------------------------------------------------------------------------#

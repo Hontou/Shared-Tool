@@ -24,23 +24,62 @@ def createNewUser():
     userEmail = input('> Email: ')
     userPassword = input('> Password: ')
     user = User.createUser(userForename, userSurname, userAddress,userEmail,userPassword)
-    print('New user with id: ' + str(user) + ' created.')
+    print('New user with id: ' + user + ' created.')
 
 
-def createNewTool():
+def createNewTool(token):
     toolName = input('> Name: ')
     toolBrand = input('> Brand: ')
     DayRate = input('> Day Rate: ')
-    x = '14-11-1111'
     bookD = hireTime()
-    temp = AllUsers()
-    toolOwner = input('> Select a Owner: ')
-    if str(toolOwner) in temp:   
-        tool = Tool.createTool(toolName, toolBrand,toolOwner,DayRate,bookD)
-        print('New tool with the owner: ' + str(toolOwner) + ' is created.')
-    else:
-        print('Please try again.')
-        createNewTool()
+    tool = Tool.createTool(toolName, toolBrand,token,DayRate,bookD)
+    print('New tool with the owner: ' + str(token) + ' is created.')
+    filePath = User.Path('userdata')
+    for file in os.listdir(filePath):
+        if file.startswith(str(token)):
+            with open(filePath+file, 'a') as myfile:
+                myfile.write(str(tool+"\n"))
+        
+
+    
+        
+def listofownedTools(token):
+    stored = []
+    start_counter = 5
+    filePath = User.Path('userdata')
+    for file in os.listdir(filePath):
+        if file.startswith(str(token)):
+            num_lines = sum(1 for line in open(filePath+file)) -1
+            with open(filePath+file, 'r') as myfile:
+                        data = myfile.readlines()
+                        while start_counter <= num_lines:
+                            stored.append(data[start_counter].strip('\n'))
+                            start_counter = start_counter + 1
+    return stored
+
+
+
+def removeTool(token):
+    toolsowned = listofownedTools(token)
+    userpath = str(User.Path('userdata')+token+'.txt')
+    print(', '.join(toolsowned))
+    selection = str(input('Which of these tools would you like to delete  > '))
+    filePath = Tool.Path('tooldata')
+    for file in os.listdir(filePath):
+        if file.startswith(str(selection)):
+            os.remove(filePath+file)
+            with open(userpath, 'r') as myfile:
+                lines = myfile.readlines()
+                myfile.close()
+                myfile = open(userpath, 'w')
+                for line in lines:
+                    if line!=selection+"\n":
+                        myfile.write(line)
+                myfile.close()
+                print('Item Removed')
+        else:
+            pass
+
     
 
 #Rewriting
@@ -157,7 +196,7 @@ def hireTool(tool, Token):
     
     
 #FIND WAY TO INCLUDE USER ADDRESS
-hireTool("rewritetest", Token)
+#hireTool("rewritetest", Token)
 
 
 ###########
@@ -257,7 +296,9 @@ def searchTool():  #Repetative but works.
     else:
         __main__()
                          
-   
+    
+    
+
 
 
 def __main__():
@@ -266,18 +307,20 @@ def __main__():
     print('3 = Create Tool')
     print('4 = Search Tool')
     print('5 = Login')
+    print('6 = Remove a Tool')
     x = input('> ')
     if x == '1':
         createNewUser()
     if x == '2':
         AllUsers()
     if x == '3':
-        createNewTool()
+        createNewTool(Token)
     if x == '4':
         searchTool()
     if x == '5':
         token = login()
-        
+    if x == '6':
+        removeTool(Token)
     if x == '7':
         pass
     else:
