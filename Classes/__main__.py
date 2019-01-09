@@ -123,7 +123,7 @@ def bookIdentifier(identify, fileN, userID):
         if not ID in line:
             tempStore.append(line)
         if ID in line:
-            tempStore.append(ID + "#"+ userID + "\n")
+            tempStore.append(ID + "#"+ userID + "$Hired" + "\n")
             if count < oor:
                 count+=1
     f.close()
@@ -190,13 +190,13 @@ def hireTool(tool, Token):
             data = f.readlines()
             bookee = data[2]
             f.close
-            print("Thank you for your order, the " + tool + "will be delivered to " + bookee)
+            print("Thank you for your order, the " + tool + " will be delivered to " + bookee)
         elif dCheck =="n":
             print("")
     
     
 #FIND WAY TO INCLUDE USER ADDRESS
-#hireTool("rewritetest", Token)
+hireTool("HireTest", Token)
 
 
 ###########
