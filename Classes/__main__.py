@@ -114,21 +114,34 @@ def hireTime():
 #Adding an identifier after booking
 def bookIdentifier(identify, fileN, userID):
     addID = "ToolData/" + fileN +".txt"
+    #Copying User Info
+    userTStore = []
+    userAdd = "UserData/" + userID + ".txt"
+    f = open(userAdd, "r")
+    for line in f:
+        userTStore.append(line)
+    f.close
     f = open(addID, "r")
     tempStore = []
     count = 0
     oor = len(identify) - 1
+    
     for line in f:
         ID = identify[count]
         if not ID in line:
             tempStore.append(line)
         if ID in line:
             tempStore.append(ID + "#"+ userID + "$Hired" + "\n")
+            userTStore.append(fileN + "!" + ID +"\n")
             if count < oor:
                 count+=1
     f.close()
     f = open(addID, "w")
     f.writelines(tempStore)
+    f.close()
+    #Add Booked Tool to User File
+    f = open(userAdd, "w")
+    f.writelines(userTStore)
     f.close()
 
 
@@ -175,10 +188,12 @@ def hireTool(tool, Token):
         f = open("ToolData/" + tool + ".txt", "r")
         data = f.readlines()
         tOwner = data[3].replace("\n", "")
+        print(tOwner)
         f.close
         #using the tool owners ID to find their address
         f = open("UserData/" + tOwner + ".txt", "r")
         data = f.readlines()
+        print(data)
         tAddress = data[2]
         f.close
         print("Their address is " +tAddress)
@@ -196,7 +211,7 @@ def hireTool(tool, Token):
     
     
 #FIND WAY TO INCLUDE USER ADDRESS
-hireTool("HireTest", Token)
+hireTool("rewritetest", Token)
 
 
 ###########
