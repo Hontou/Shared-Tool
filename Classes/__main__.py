@@ -145,6 +145,31 @@ def bookIdentifier(identify, fileN, userID):
     f.close()
 
 
+#Adding Late
+def lateCheck(user):
+    allTool = []
+    userI = []
+    x = "!"
+    f = open("ToolData/ToolDir.txt", "r")
+    for line in f:
+        allTool.append(line)
+    f.close
+    #Opens User File to check dates
+    f = open("UserData/" + user + ".txt", "r")
+    for line in f:
+        if x in line:
+            for tool in allTool:
+                if tool in line:
+                    y = line
+                    y = y.replace("\n", "")
+                    y = y.split("!")
+                    userI.append(y[1])
+    f.close
+    #Remove and then add a method to write to user file with late fee
+    print(userI)
+#lateCheck("Thomas Law")
+
+
 #Finds all the lines with # in and prints
 def testBooked(fileN):
     findID = "ToolData/" + fileN + ".txt"
@@ -211,7 +236,12 @@ def hireTool(tool, Token):
     
     
 #FIND WAY TO INCLUDE USER ADDRESS
-hireTool("rewritetest", Token)
+#hireTool("rewritetest", Token)
+
+
+
+
+
 
 
 ###########
