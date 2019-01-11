@@ -3,8 +3,10 @@ from Tool import *
 from Time import *#
 import datetime
 
+
+
 #REMOVE
-Token = "Thomas Law"
+#Token = "Thomas Law"
 
 def login():
     email = 'micharin99@gmail.com'
@@ -14,9 +16,11 @@ def login():
         if file.endswith(".txt"):
             with open(filePath+file,'r') as myfile:
                 data = myfile.readlines()
-                if email == str(data[3].strip('\n')):
-                    if password == str(data[4].strip('\n')):
-                        return data[1] 
+                if str(email) == str(data[3].strip('\n')):
+                    if str(password) == str(data[4].strip('\n')):
+                        print('logged')
+                        return data[1]
+                    
 def createNewUser():
     userForename = input('> Forename: ')
     userSurname = input('> Surname: ')
@@ -373,4 +377,5 @@ def __main__():
         
 
 
-__main__()
+
+#__main__()
