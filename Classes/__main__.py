@@ -6,7 +6,7 @@ import datetime
 
 
 #REMOVE
-#Token = "Thomas Law"
+Token = "Thomas Law"
 
 def login():
     email = 'micharin99@gmail.com'
@@ -43,6 +43,9 @@ def createNewTool(token):
         if file.startswith(str(token)):
             with open(filePath+file, 'a') as myfile:
                 myfile.write(str(tool+"\n"))
+    f = open("ToolData/ToolDir.txt", "a+")
+    f.write(toolName + "\n")
+    f.close
         
 
     
@@ -378,4 +381,4 @@ def __main__():
 
 
 
-#__main__()
+__main__()
