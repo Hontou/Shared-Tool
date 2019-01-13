@@ -153,10 +153,11 @@ def bookIdentifier(identify, fileN, userID):
 
 
 #Adding Late
-def lateCheck(user):
+def lateAdd(user):
     allTool = []
     userI = []
     x = "!"
+    lateID = "£"
     f = open("ToolData/ToolDir.txt", "r")
     for line in f:
         allTool.append(line)
@@ -164,17 +165,26 @@ def lateCheck(user):
     #Opens User File to check dates
     f = open("UserData/" + user + ".txt", "r")
     for line in f:
-        if x in line:
-            for tool in allTool:
-                if tool in line:
-                    y = line
-                    y = y.replace("\n", "")
-                    y = y.split("!")
-                    userI.append(y[1])
+        if not lateID in line:
+            if x in line:
+                for tool in allTool:
+                    if tool in line:
+                        y = line
+                        z = y.replace("\n", "")
+                        e = z.split("!")
+                        cT = getDMY()
+                        if e[1] < cT:
+                            userI.append(z + "£Late" + "\n")
+            if not x in line:
+                userI.append(line)
+        if lateID in line:
+            userI.append(line)
+    f.close
+    f = open("UserData/" + user + ".txt", "w")
+    f.writelines(userI)
     f.close
     #Remove and then add a method to write to user file with late fee
-    print(userI)
-#lateCheck("Thomas Law")
+lateAdd("Thomas Law")
 
 
 #Finds all the lines with # in and prints
@@ -381,4 +391,4 @@ def __main__():
 
 
 
-__main__()
+#__main__()
