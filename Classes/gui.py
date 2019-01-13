@@ -1,5 +1,7 @@
 import tkinter as tk
 import tkinter.messagebox as tm
+from tkinter import ttk
+from tkinter.ttk import Frame, Label, Style
 from User import *
 from Tool import *
 from Time import *
@@ -15,12 +17,14 @@ class SharedTool(tk.Tk): #Initializer
 
     def __init__(self): #Constructors
         tk.Tk.__init__(self)
+ 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand= True)
-
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
+    
+        
         self.frames = {}
 
         for F in (StartPage, PageOne):
@@ -40,31 +44,60 @@ class SharedTool(tk.Tk): #Initializer
 class StartPage(tk.Frame): #Start Page
 
     def __init__(self, parent, controller):
+        global username_i
+        global password_i
         tk.Frame.__init__(self, parent)
-        label = tk.Label(self, text="Stored Tools Login Page", font=LARGE_FONT)
-        label.pack(pady=10,padx=10)
 
+        label = ttk.Label(self, text="Stored Tools Login Page", font=("Verdana", 12))
+        label.grid(row=0, column=0, sticky=tk.W)
+        Style().configure("TButton", padding=(0, 5, 0, 5), font='serif 9')
+        
         #####Login Inputs#####
-        username = tk.Label(self, text="Email")
-        username.pack(side=tk.LEFT)
-        username_i = tk.Entry(self)
-        username_i.pack(side=tk.LEFT)
-        password = tk.Label(self, text="Password")
+        username = ttk.Label(self, text="Email")
+        username.grid(row=0, column=2, sticky=tk.W)
+
+        username_i = ttk.Entry(self)
+        username_i.grid(row=0, column=3, sticky=tk.W)
+
+        password = ttk.Label(self, text="Password")
+        password.grid(row=0, column=4, sticky=tk.W)
+
         password_i = tk.Entry(self)
-        password.pack(side=tk.LEFT)
-        password_i.pack(side=tk.LEFT)
+        password_i.grid(row=0, column=5, sticky=tk.W)
         #####Login Inputs#####
-
         
-        button1 = tk.Button(self, text="Log In",
-                            command=lambda: logcheck(username_i.get(), password_i.get()))#.get username and password from entry
-        
-        button1.pack()
+        maintext = ttk.Label(self, text="List of Registered Users: ", font=("Verdana", 11))
+        emptytext = Label(self, width=20).grid(row=1, column=0)
+        maintext.grid(row=2, column=0, sticky=tk.W)   
+        subtext = ttk.Label(self, text=AllUsers(), wraplength=500, font='serif 10')
+        subtext.grid(row=4, column=0, sticky=tk.W)       
 
-        button2 = tk.Button(self, text="Register",
+#######################################################        
+        button1 = ttk.Button(self, text="Log In",
+                            command=lambda: logcheck(username_i.get(), password_i.get()))#.get username and password from entry   
+        button1.grid(row=0,column=6, sticky=tk.E)
+#######################################################  
+        button2 = ttk.Button(self, text="Quit",
                             command= createNewUser)
-        button2.pack()
-
+        button2.place(rely=1.0, relx=1.0, x=0, y=0, anchor=tk.SE)
+#######################################################  
+        button3 = ttk.Button(self, text="Create Tool",
+                            command= createNewUser)
+        button3.place(rely=1.0, relx=0, x=255, y=0, anchor=tk.SW)
+#######################################################  
+        button4 = ttk.Button(self, text="Hire Tool",
+                            command= createNewUser)
+        button4.place(rely=1.0, relx=0, x=170, y=0, anchor=tk.SW)
+#######################################################  
+        button5 = ttk.Button(self, text="Search Tool",
+                            command= createNewUser)
+        button5.place(rely=1.0, relx=0, x=86, y=0, anchor=tk.SW)
+#######################################################  
+        button6 = ttk.Button(self, text="Register User",
+                             command=quit)
+        button6.place(rely=1.0, relx=0, x=0, y=0, anchor=tk.SW)
+#######################################################
+        
         def logcheck(email, password):  #New Login taken from __main__. Displays if username or password wrong with a FOR/IF statement.
             auth = None
             filePath = User.Path('userdata')
@@ -86,19 +119,18 @@ class StartPage(tk.Frame): #Start Page
             if auth is False:
                 tm.showerror("Error", "Wrong Username or Password")#error Message
                                     
-
-
+        
         
     
 class PageOne(tk.Frame): #Logged In Page
 
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        label = tk.Label(self, text="Logged In", font=LARGE_FONT)
-        label.pack(pady=10,padx=10)
-        button1 = tk.Button(self, text="Back to Main",
+        ttk.Frame.__init__(self, parent)
+        label = ttk.Label(self, text="Logged In", font=LARGE_FONT)
+        label.grid(row=0, column=0)
+        button1 = ttk.Button(self, text="Back to Main",
                             command=lambda:controller.show_frame(StartPage))
-        button1.pack()
+        button1.grid(row=0, column=0)
 
 
 ##############################################################################################
@@ -113,9 +145,21 @@ def createNewUser(): #Creates account with User class.
     print('New user with id: ' + user + ' created.') #unique id generated
 
 
-
-
+def AllUsers():
+            filePath = User.Path('userdata')
+            stored = []
+            for file in os.listdir(filePath):
+                if file.endswith(".txt"):
+                    with open(filePath+file,'r') as myfile:
+                        data = myfile.readlines()
+                        data = data[1].strip('\n') #stored names in memory,
+                                                   #could be a class but im lazy
+                        stored.append(data)
+                        
+            return '\n'.join(stored[:30])
 
 app = SharedTool()#app run
+app.geometry("620x300")
+app.resizable(0, 0)
 app.mainloop()#loop
 
