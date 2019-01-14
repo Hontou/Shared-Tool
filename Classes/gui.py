@@ -6,9 +6,23 @@ from User import *
 from Tool import *
 from Time import *
 import datetime
+import time
+import os
 
 LARGE_FONT=("Verdana", 12) #standard font
 
+def AllUsers():
+    filePath = User.Path('userdata')
+    stored = []
+    for file in os.listdir(filePath):
+        if file.endswith(".txt"):
+            with open(filePath+file,'r') as myfile:
+                data = myfile.readlines()
+                data = data[1].strip('\n') #stored names in memory,
+                                           #could be a class but im lazy
+                stored.append(data)
+                        
+    return '\n'.join(stored[:12])
 
 
 ##############################################################################################
@@ -17,7 +31,6 @@ class SharedTool(tk.Tk): #Initializer
 
     def __init__(self): #Constructors
         tk.Tk.__init__(self)
- 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand= True)
         container.grid_rowconfigure(0, weight=1)
@@ -27,7 +40,7 @@ class SharedTool(tk.Tk): #Initializer
         
         self.frames = {}
 
-        for F in (StartPage, PageOne):
+        for F in (StartPage, Logged, RegisterPage):
             
             frame = F(container, self)
             
@@ -42,12 +55,9 @@ class SharedTool(tk.Tk): #Initializer
 
 
 class StartPage(tk.Frame): #Start Page
-
+        
     def __init__(self, parent, controller):
-        global username_i
-        global password_i
         tk.Frame.__init__(self, parent)
-
         label = ttk.Label(self, text="Stored Tools Login Page", font=("Verdana", 12))
         label.grid(row=0, column=0, sticky=tk.W)
         Style().configure("TButton", padding=(0, 5, 0, 5), font='serif 9')
@@ -58,7 +68,6 @@ class StartPage(tk.Frame): #Start Page
 
         username_i = ttk.Entry(self)
         username_i.grid(row=0, column=3, sticky=tk.W)
-
         password = ttk.Label(self, text="Password")
         password.grid(row=0, column=4, sticky=tk.W)
 
@@ -70,36 +79,39 @@ class StartPage(tk.Frame): #Start Page
         emptytext = Label(self, width=20).grid(row=1, column=0)
         maintext.grid(row=2, column=0, sticky=tk.W)   
         subtext = ttk.Label(self, text=AllUsers(), wraplength=500, font='serif 10')
-        subtext.grid(row=4, column=0, sticky=tk.W)       
+        subtext.grid(row=4, column=0, sticky=tk.W)        
+#######################################################
 
-#######################################################        
-        button1 = ttk.Button(self, text="Log In",
-                            command=lambda: logcheck(username_i.get(), password_i.get()))#.get username and password from entry   
-        button1.grid(row=0,column=6, sticky=tk.E)
+        login = ttk.Button(self, text="Log In",
+                                command=lambda: logcheck(self, username_i.get(), password_i.get()))#.get username and password from entry   
+        login.place(rely=0, relx=1.0, x=0, y=0, anchor=tk.NE)
+                              
+        
 #######################################################  
-        button2 = ttk.Button(self, text="Quit",
-                            command= createNewUser)
-        button2.place(rely=1.0, relx=1.0, x=0, y=0, anchor=tk.SE)
+        button2 = ttk.Button(self, text="Register User",
+                             command=lambda: controller.show_frame(RegisterPage))
+        button2.place(rely=1.0, relx=0, x=0, y=0, anchor=tk.SW)
 #######################################################  
-        button3 = ttk.Button(self, text="Create Tool",
-                            command= createNewUser)
-        button3.place(rely=1.0, relx=0, x=255, y=0, anchor=tk.SW)
+        button3 = ttk.Button(self, text="Search Tool",
+                            command= False)
+        button3.place(rely=1.0, relx=0, x=86, y=0, anchor=tk.SW)
 #######################################################  
         button4 = ttk.Button(self, text="Hire Tool",
-                            command= createNewUser)
+                            command= False)
         button4.place(rely=1.0, relx=0, x=170, y=0, anchor=tk.SW)
 #######################################################  
-        button5 = ttk.Button(self, text="Search Tool",
-                            command= createNewUser)
-        button5.place(rely=1.0, relx=0, x=86, y=0, anchor=tk.SW)
-#######################################################  
-        button6 = ttk.Button(self, text="Register User",
-                             command=quit)
-        button6.place(rely=1.0, relx=0, x=0, y=0, anchor=tk.SW)
-#######################################################
-        
-        def logcheck(email, password):  #New Login taken from __main__. Displays if username or password wrong with a FOR/IF statement.
+        button5 = ttk.Button(self, text="Create Tool",
+                            command= False)
+        button5.place(rely=1.0, relx=0, x=255, y=0, anchor=tk.SW)
+#######################################################       
+        button6 = ttk.Button(self, text="Quit",
+                            command=quit)
+        button6.place(rely=1.0, relx=1.0, x=0, y=0, anchor=tk.SE)
+#######################################################   
+  
+        def logcheck(self, email, password):  #New Login taken from __main__. Displays if username or password wrong with a FOR/IF statement.
             auth = None
+            
             filePath = User.Path('userdata')
             for file in os.listdir(filePath):
                 if file.endswith(".txt"):
@@ -107,9 +119,17 @@ class StartPage(tk.Frame): #Start Page
                         data = myfile.readlines()
                         if email == str(data[3].strip('\n')):
                             if password == str(data[4].strip('\n')):
-                                print('Logged in as '+data[1])
-                                controller.show_frame(PageOne)
+                                #print('Logged in as '+data[1])
+                                controller.show_frame(Logged)
                                 auth = True
+                                x = data[0].strip('\n')
+                                tm.showinfo("Login","Logged in as:  "+data[1])
+                                if not os.path.exists('TempData/'):
+                                    os.makedirs('TempData/')
+                                tempfile = 'TempData/'+str(x)
+                                output_file = open(tempfile + '.txt', 'w')
+                                output_file.write(data[0]+data[1]+data[2]+data[3]+data[4])
+                                output_file.close()
                                 return data[1]
                             else:
                                 auth = False
@@ -118,45 +138,178 @@ class StartPage(tk.Frame): #Start Page
                                 
             if auth is False:
                 tm.showerror("Error", "Wrong Username or Password")#error Message
-                                    
-        
+                              
+  
         
     
-class PageOne(tk.Frame): #Logged In Page
+class Logged(tk.Frame):
+    #Logged In Page
+    #Deletes logged info but still stored in
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+
+        token = Logged.grabtoken()
+        
+        loggedtext = ttk.Label(self, text='Currently Logged in')
+        loggedtext.grid(row=0, column=5, sticky=tk.E)
+
+        label = ttk.Label(self, text="Stored Tools Login Page", font=("Verdana", 12))
+        label.grid(row=0, column=0, sticky=tk.W)
+        Style().configure("TButton", padding=(0, 5, 0, 5), font='serif 9')
+
+        maintext = ttk.Label(self, text="List of Registered Users: ", font=("Verdana", 11))
+        emptytext = Label(self, width=20).grid(row=1, column=0)
+        maintext.grid(row=2, column=0, sticky=tk.W)   
+        subtext = ttk.Label(self, text=AllUsers(), wraplength=500, font='serif 10')
+        subtext.grid(row=4, column=0, sticky=tk.W)
+
+
+        def Temp():
+            controller.show_frame(StartPage)
+            Logged.deletetoken()
+
+#######################################################        
+        button1 = ttk.Button(self, text="Log Out",
+                            command=lambda: Temp())#.get username and password from entry   
+        button1.place(rely=0, relx=1.0, x=0, y=0, anchor=tk.NE)
+#######################################################  
+        button2 = ttk.Button(self, text="Register User",
+                             command=lambda: controller.show_frame(RegisterPage))
+        button2.place(rely=1.0, relx=0, x=0, y=0, anchor=tk.SW)
+#######################################################  
+        button3 = ttk.Button(self, text="Search Tool",
+                            command= False)
+        button3.place(rely=1.0, relx=0, x=86, y=0, anchor=tk.SW)
+#######################################################  
+        button4 = ttk.Button(self, text="Hire Tool",
+                            command= False)
+        button4.place(rely=1.0, relx=0, x=170, y=0, anchor=tk.SW)
+#######################################################  
+        button5 = ttk.Button(self, text="Create Tool",
+                            command= False)
+        button5.place(rely=1.0, relx=0, x=255, y=0, anchor=tk.SW)
+#######################################################       
+        button6 = ttk.Button(self, text="Quit",
+                            command=quit)
+        button6.place(rely=1.0, relx=1.0, x=0, y=0, anchor=tk.SE)
+#######################################################   
+
+    def grabtoken():
+            stored = []
+            start_counter = 0
+            for file in os.listdir('TempData/'):
+                if file.endswith('.txt'):
+                    with open('TempData/'+file, 'r') as myfile:
+                            data = myfile.readlines()
+                            while start_counter < 4:
+                                stored.append(data[start_counter].strip('\n'))
+                                start_counter = start_counter + 1
+                                print(stored[start_counter])
+                    return stored
+
+    def deletetoken():
+        filePath ='TempData/'
+        for file in os.listdir(filePath):
+            if file.endswith('.txt'):
+                os.remove(filePath+file)            
+            
+            
+class RegisterPage(tk.Frame): #Logged In Page
 
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
         label = ttk.Label(self, text="Logged In", font=LARGE_FONT)
-        label.grid(row=0, column=0)
+        label.place
+        label = ttk.Label(self, text="Stored Tools Login Page", font=("Verdana", 12))
+        label.grid(row=0, column=0, sticky=tk.W)
+        Style().configure("TButton", padding=(0, 5, 0, 5), font='serif 9')
+        
+####################################################### 
         button1 = ttk.Button(self, text="Back to Main",
                             command=lambda:controller.show_frame(StartPage))
-        button1.grid(row=0, column=0)
+        button1.place(rely=0, relx=1.0, x=0, y=0, anchor=tk.NE)
+#######################################################  
+        button2 = ttk.Button(self, text="Register User",
+                             command=lambda: controller.show_frame(RegisterPage))
+        button2.place(rely=1.0, relx=0, x=0, y=0, anchor=tk.SW)
+#######################################################  
+        button3 = ttk.Button(self, text="Search Tool",
+                            command= False)
+        button3.place(rely=1.0, relx=0, x=86, y=0, anchor=tk.SW)
+#######################################################  
+        button4 = ttk.Button(self, text="Hire Tool",
+                            command= False)
+        button4.place(rely=1.0, relx=0, x=170, y=0, anchor=tk.SW)
+#######################################################  
+        button5 = ttk.Button(self, text="Create Tool",
+                            command= False)
+        button5.place(rely=1.0, relx=0, x=255, y=0, anchor=tk.SW)
+#######################################################       
+        button6 = ttk.Button(self, text="Quit",
+                            command=quit)
+        button6.place(rely=1.0, relx=1.0, x=0, y=0, anchor=tk.SE)
+#######################################################
+        
+        maintext = ttk.Label(self, text="Registration Form: ", font=("Verdana", 11))
+        emptytext = Label(self, width=20).grid(row=1, column=0)
+        maintext.grid(row=2, column=0, sticky=tk.W)
 
+        
+        forename = ttk.Label(self, text="Forename")
+        forename.grid(row=4, column=0, sticky=tk.W)
+        forename_i = ttk.Entry(self)
+        forename_i.grid(row=5, column=0, sticky=tk.W)
 
+        surname = ttk.Label(self, text="Surname")
+        surname.grid(row=6, column=0, sticky=tk.W)
+        surname_i = tk.Entry(self)
+        surname_i.grid(row=7, column=0, sticky=tk.W)
+
+        address = ttk.Label(self, text="Post Code")
+        address.grid(row=8, column=0, sticky=tk.W)
+        address_i = tk.Entry(self)
+        address_i.grid(row=9, column=0, sticky=tk.W)
+
+        email = ttk.Label(self, text="Email")
+        email.grid(row=4, column=1, sticky=tk.W)
+        email_i = ttk.Entry(self)
+        email_i.grid(row=5, column=1, sticky=tk.W)
+
+        password = ttk.Label(self, text="Password")
+        password.grid(row=6, column=1, sticky=tk.W)
+        password_i = ttk.Entry(self)
+        password_i.grid(row=7, column=1, sticky=tk.W)
+
+        submit = ttk.Button(self, text="Submit",
+                            command=lambda: createNewUser(forename_i.get(), surname_i.get(),
+                                                          address_i.get(), email_i.get(),
+                                                          password_i.get()))#.get username and password from entry   
+        submit.grid(row=9, column=1, sticky=tk.W)
+        
+        def createNewUser(userForename, userSurname, userAddress, userEmail, userPassword): #Creates account with User class.
+            counter = 0
+            listoflist = [userForename, userSurname, userAddress, userEmail, userPassword]
+            val = 0
+            while counter < 5:
+                if listoflist[counter] == '':
+                    pass
+                else:
+                    val = val + 1
+                
+                counter = counter + 1
+
+            if val == 5:
+                user = User.createUser(userForename, userSurname, userAddress,userEmail,userPassword) #Classes/User
+                controller.show_frame(StartPage)
+                tm.showinfo("Registered", "You can now Login.")
+                print('New user with id: ' + user + ' created.') #unique id generated
+            else:
+                tm.showerror("Error", "Parameter(s) not entered.")
+
+        
 ##############################################################################################
 
-def createNewUser(): #Creates account with User class.
-    userForename = input('> Forename: ')
-    userSurname = input('> Surname: ')
-    userAddress = input('> Address: ')
-    userEmail = input('> Email: ')
-    userPassword = input('> Password: ')
-    user = User.createUser(userForename, userSurname, userAddress,userEmail,userPassword) #Classes/User
-    print('New user with id: ' + user + ' created.') #unique id generated
 
-
-def AllUsers():
-            filePath = User.Path('userdata')
-            stored = []
-            for file in os.listdir(filePath):
-                if file.endswith(".txt"):
-                    with open(filePath+file,'r') as myfile:
-                        data = myfile.readlines()
-                        data = data[1].strip('\n') #stored names in memory,
-                                                   #could be a class but im lazy
-                        stored.append(data)
-                        
-            return '\n'.join(stored[:30])
 
 app = SharedTool()#app run
 app.geometry("620x300")
