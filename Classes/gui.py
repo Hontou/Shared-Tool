@@ -5,6 +5,7 @@ from tkinter.ttk import Frame, Label, Style
 from User import *
 from Tool import *
 from Time import *
+
 import datetime
 import time
 import os
@@ -40,7 +41,7 @@ class SharedTool(tk.Tk): #Initializer
         
         self.frames = {}
 
-        for F in (StartPage, Logged, RegisterPage):
+        for F in (StartPage, Logged, RegisterPage, RegisterToolPage):
             
             frame = F(container, self)
             
@@ -101,14 +102,16 @@ class StartPage(tk.Frame): #Start Page
         button4.place(rely=1.0, relx=0, x=170, y=0, anchor=tk.SW)
 #######################################################  
         button5 = ttk.Button(self, text="Create Tool",
-                            command= False)
+                            command=lambda: failedlogin())
         button5.place(rely=1.0, relx=0, x=255, y=0, anchor=tk.SW)
 #######################################################       
         button6 = ttk.Button(self, text="Quit",
                             command=quit)
         button6.place(rely=1.0, relx=1.0, x=0, y=0, anchor=tk.SE)
 #######################################################   
-  
+        def failedlogin():
+            tm.showerror("Error", "Please login/register an account before creating.")
+            controller.show_frame(RegisterPage)
         def logcheck(self, email, password):  #New Login taken from __main__. Displays if username or password wrong with a FOR/IF statement.
             auth = None
             
@@ -186,7 +189,7 @@ class Logged(tk.Frame):
         button4.place(rely=1.0, relx=0, x=170, y=0, anchor=tk.SW)
 #######################################################  
         button5 = ttk.Button(self, text="Create Tool",
-                            command= False)
+                            command=lambda: controller.show_frame(RegisterToolPage))
         button5.place(rely=1.0, relx=0, x=255, y=0, anchor=tk.SW)
 #######################################################       
         button6 = ttk.Button(self, text="Quit",
@@ -213,6 +216,106 @@ class Logged(tk.Frame):
             if file.endswith('.txt'):
                 os.remove(filePath+file)            
             
+class RegisterToolPage(tk.Frame):
+    #Logged In Page
+    #Deletes logged info but still stored in
+    def __init__(self, parent, controller):
+        ttk.Frame.__init__(self, parent)
+        label = ttk.Label(self, text="Logged In", font=LARGE_FONT)
+        label.place
+        label = ttk.Label(self, text="Stored Tools Login Page", font=("Verdana", 12))
+        label.grid(row=0, column=0, sticky=tk.W)
+        Style().configure("TButton", padding=(0, 5, 0, 5), font='serif 9')
+        
+####################################################### 
+        button1 = ttk.Button(self, text="Back to Main",
+                            command=lambda:controller.show_frame(StartPage))
+        button1.place(rely=0, relx=1.0, x=0, y=0, anchor=tk.NE)
+#######################################################  
+        button2 = ttk.Button(self, text="Register User",
+                             command=lambda: controller.show_frame(RegisterPage))
+        button2.place(rely=1.0, relx=0, x=0, y=0, anchor=tk.SW)
+#######################################################  
+        button3 = ttk.Button(self, text="Search Tool",
+                            command= False)
+        button3.place(rely=1.0, relx=0, x=86, y=0, anchor=tk.SW)
+#######################################################  
+        button4 = ttk.Button(self, text="Hire Tool",
+                            command= False)
+        button4.place(rely=1.0, relx=0, x=170, y=0, anchor=tk.SW)
+#######################################################  
+        button5 = ttk.Button(self, text="Create Tool",
+                            command= False)
+        button5.place(rely=1.0, relx=0, x=255, y=0, anchor=tk.SW)
+#######################################################       
+        button6 = ttk.Button(self, text="Quit",
+                            command=quit)
+        button6.place(rely=1.0, relx=1.0, x=0, y=0, anchor=tk.SE)
+#######################################################
+        
+        maintext = ttk.Label(self, text="Tool Registration Form: ", font=("Verdana", 11))
+        emptytext = Label(self, width=20).grid(row=1, column=0)
+        maintext.grid(row=2, column=0, sticky=tk.W)
+
+        
+        toolname = ttk.Label(self, text="Tool Name")
+        toolname.grid(row=4, column=0, sticky=tk.W)
+        toolname_i = ttk.Entry(self)
+        toolname_i.grid(row=5, column=0, sticky=tk.W)
+
+        toolbrand = ttk.Label(self, text="Tool Brand")
+        toolbrand.grid(row=6, column=0, sticky=tk.W)
+        toolbrand_i = tk.Entry(self)
+        toolbrand_i.grid(row=7, column=0, sticky=tk.W)
+
+        dayrate = ttk.Label(self, text="Day Rate")
+        dayrate.grid(row=8, column=0, sticky=tk.W)
+        dayrate_i = tk.Entry(self)
+        dayrate_i.grid(row=9, column=0, sticky=tk.W)
+############################################################        
+############################################################
+############################################################
+        start = ttk.Label(self, text="Start Date")
+        start.grid(row=4, column=1, sticky=tk.W)
+        start_i = tk.Button(self, text="Pick a Date", command=lambda: application())
+        start_i.grid(row=5, column=2, sticky=tk.W)
+
+        end = ttk.Label(self, text="End Date")
+        end.grid(row=6, column=1, sticky=tk.W)
+        end_i = tk.Button(self, text="Pick a Date", command=lambda: application())
+        end_i.grid(row=7, column=2, sticky=tk.W)
+        
+
+############################################################        
+############################################################
+############################################################
+        submit = ttk.Button(self, text="Submit")
+        submit.grid(row=9, column=1, sticky=tk.W)
+        def createNewTool(token, toolName, toolBrand, DayRate):
+            toolName = input('> Name: ')
+            toolBrand = input('> Brand: ')
+            DayRate = input('> Day Rate: ')
+            bookD = hireTime()
+            tool = Tool.createTool(toolName, toolBrand,token,DayRate,bookD)
+            print('New tool with the owner: ' + str(token) + ' is created.')
+            filePath = User.Path('userdata')
+            for file in os.listdir(filePath):
+                if file.startswith(str(token)):
+                    with open(filePath+file, 'a') as myfile:
+                        myfile.write(str(tool+"\n"))
+            f = open("ToolData/ToolDir.txt", "a+")
+            f.write(toolName + "\n")
+            f.close
+        def hireTime():
+            start = datetime.datetime.strptime(start, "%d-%m-%Y") 
+            end = datetime.datetime.strptime(end, "%d-%m-%Y")
+            trueEnd = (end-start).days + 1
+            date_generated = [start + datetime.timedelta(days=x) for x in range(0, trueEnd)]
+            dList = []
+            for x in date_generated:
+                dList.append(x.strftime("%d-%m-%Y"))
+            return(' \n'.join(dList))
+
             
 class RegisterPage(tk.Frame): #Logged In Page
 
@@ -309,10 +412,12 @@ class RegisterPage(tk.Frame): #Logged In Page
         
 ##############################################################################################
 
+Logged.deletetoken()
 
+def __main__():
+    app = SharedTool()#app run
+    app.geometry("620x300")
+    app.resizable(0, 0)
+    app.mainloop()#loop
 
-app = SharedTool()#app run
-app.geometry("620x300")
-app.resizable(0, 0)
-app.mainloop()#loop
-
+__main__()
