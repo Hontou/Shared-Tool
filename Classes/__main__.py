@@ -129,6 +129,9 @@ def bookIdentifier(identify, fileN, userID):
         userTStore.append(line)
     f.close
     f = open(addID, "r")
+    data = f.readlines()
+    f.close
+    f = open(addID, "r")
     tempStore = []
     count = 0
     oor = len(identify) - 1
@@ -139,7 +142,7 @@ def bookIdentifier(identify, fileN, userID):
             tempStore.append(line)
         if ID in line:
             tempStore.append(ID + "#"+ userID + "$Hired" + "\n")
-            userTStore.append(fileN + "!" + ID +"\n")
+            userTStore.append(fileN + "!" + ID + "£" + data[2])
             if count < oor:
                 count+=1
     f.close()
@@ -184,7 +187,7 @@ def lateAdd(user):
     f.writelines(userI)
     f.close
     #Remove and then add a method to write to user file with late fee
-lateAdd("Thomas Law")
+#lateAdd("Thomas Law")
 
 
 #Finds all the lines with # in and prints
@@ -199,6 +202,16 @@ def testBooked(fileN):
             print(line)
     f.close()
 
+def addDelCost(Token):
+    f = open("UserData/" + Token + ".txt", "r")
+    data = f.readlines()
+    f.close
+    temp = data[5].replace("\n", "")
+    temp = int(temp) + 5
+    data[5] = str(temp) + "\n"
+    f = open("UserData/" + Token + ".txt", "w")
+    f.writelines(data)
+    
 def hireTool(tool, Token):
     print("The following days are available:")
     checkDate = "ToolData/" + tool +".txt"
@@ -247,18 +260,89 @@ def hireTool(tool, Token):
             data = f.readlines()
             bookee = data[2]
             f.close
+            addDelCost(Token)
             print("Thank you for your order, the " + tool + " will be delivered to " + bookee)
         elif dCheck =="n":
             print("")
+
+#hireTool("Testtt", "Thomas Law")
+
+
+
+
+
+def sep():
+    return "**************************************************\n"
+
+def invoiceGen(userID):
+    x = datetime.datetime.now()
+    cMonth = x.strftime("%m")
+    
+    hireTools = []
+    tempL = []
+    allTool = []
+    hireCost = []
+    finalCost = []
+    count = 0
+    
+    f = open("UserData/" + userID + ".txt", "r")
+    for line in f:
+        if "!" in line:
+            l = line.replace("\n", "")
+            splitO = l.split("!")
+            tool = splitO[0]
+            datePrice = splitO[1].split("£")
+            tempL.append([tool, datePrice[1]])
+            allTool.append(tool)
+    f.close
     
     
-#FIND WAY TO INCLUDE USER ADDRESS
-#hireTool("rewritetest", Token)
+    #Getting it down to just the tool names
+    for x in tempL:
+        tool = x[0]
+        cost = x[1]
+        if tool not in hireTools:
+            hireTools.append(tool)
+            hireCost.append(cost)
+    toolQuanDict = {i:allTool.count(i) for i in allTool}    
+    
+    while count < len(hireTools):
+        x = int(toolQuanDict[hireTools[count]]) * int(hireCost[count])
+        finalCost.append(x)
+        count += 1
+    
 
+    f = open("UserData/" + userID + ".txt", "r")
+    data = f.readlines()
+    f.close
+    
+    grandTot = 0
+    count = 0 
+    for line in hireTools:
+        grandTot = grandTot + finalCost[count]
+        count +=1
+    grandTot = grandTot + int(data[5].replace("\n", ""))
+    
+    count = 0
+    
+    f = open("InvoiceData/" + cMonth + userID + ".txt", "w")
+    f.writelines("\n" + sep() + "\n")
+    f.writelines(userID + "'s invoice of month " + cMonth + "\n")
+    f.writelines("\n" + sep() + "\n")
+    f.writelines("Tool Hire Charges:\n")
+    for line in hireTools:
+        f.writelines(hireTools[count] + " : £" + str(finalCost[count]) + "\n")
+        count += 1
+    f.writelines("\nDelivery Costs:\n£" + data[5])
+    f.writelines("\n" + sep() + "\n")
+    f.writelines("Subtotal:\n£" + str(grandTot) + "\n")
+    f.writelines("Insurance Monthly Cost: +£5\n")
+    grandTot += 5
+    f.writelines("\n" + sep() + "\n")
+    f.writelines("Grand Ttotal:\n£" + str(grandTot) + "\n")
+    f.close
 
-
-
-
+invoiceGen("Thomas Law")
 
 
 ###########
@@ -391,4 +475,4 @@ def __main__():
 
 
 
-#__main__()
+__main__()
