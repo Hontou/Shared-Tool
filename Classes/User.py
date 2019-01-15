@@ -49,7 +49,7 @@ class User:
         userId = uuid.uuid4().hex #random id for the user, this will eventually be used
                                   #to identify the user instead of using buildFullName()
         newUser = User(userId, userForename, userSurname, userAddress, userEmail, userPassword)
-        newUser.buildFile()
+        newUser.buildFile(userId)
         return userId      
             
       #-------------------------------File/Text Documentation Functions-------------------------------#
@@ -60,10 +60,10 @@ class User:
             data = myfile.readlines()#reads line by line
             #print(data[1])
         
-    def buildFile(self): #Builds the .txt file
+    def buildFile(self, userId): #Builds the .txt file
         filePath = self.Path()
         self.createUserFile(filePath)
-        fileName = filePath + '/' + str(self.buildFullName())
+        fileName = filePath + '/' + str(userId)
         self.writeUTF(fileName)
 
     def createUserFile(self, filePath):   #Creates a path      
