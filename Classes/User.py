@@ -76,7 +76,8 @@ class User:
                           + self.user_forename + ' ' + self.user_surname + '\n'
                           + self.user_address + '\n'
                           + self.user_email + '\n'
-                          + self.user_password + '\n')
+                          + self.user_password + '\n'
+                          + "0\n")
         output_file.close()
         
     def Path(self): #defined path for users
