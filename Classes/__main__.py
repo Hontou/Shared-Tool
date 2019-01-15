@@ -6,7 +6,6 @@ import datetime
 
 
 #REMOVE
-Token = "Thomas Law"
 
 def login():
     email = 'micharin99@gmail.com'
@@ -19,7 +18,8 @@ def login():
                 if str(email) == str(data[3].strip('\n')):
                     if str(password) == str(data[4].strip('\n')):
                         print('logged')
-                        return data[1]
+                        return data[0]
+                    
                     
 def createNewUser():
     userForename = input('> Forename: ')
@@ -37,7 +37,7 @@ def createNewTool(token):
     DayRate = input('> Day Rate: ')
     bookD = hireTime()
     tool = Tool.createTool(toolName, toolBrand,token,DayRate,bookD)
-    print('New tool with the owner: ' + str(token) + ' is created.')
+    print('New tool with the owner id: ' + str(token) + ' is created.')
     filePath = User.Path('userdata')
     for file in os.listdir(filePath):
         if file.startswith(str(token)):
@@ -219,7 +219,7 @@ def hireTool(tool, Token):
     tempStore = []
     for line in f:
         #2019+2020
-        if "1111 " in line:
+        if "2019 " in line:
             tempStore.append(line.replace(" \n", ""))
     print(tempStore)
     f.close()
@@ -342,7 +342,7 @@ def invoiceGen(userID):
     f.writelines("Grand Ttotal:\n£" + str(grandTot) + "\n")
     f.close
 
-invoiceGen("Thomas Law")
+#invoiceGen("Thomas Law")
 
 
 ###########
@@ -460,13 +460,14 @@ def __main__():
     if x == '2':
         AllUsers()
     if x == '3':
-        createNewTool(Token)
+        createNewTool(token)
     if x == '4':
         searchTool()
     if x == '5':
         token = login()
+        return token
     if x == '6':
-        removeTool(Token)
+        removeTool(token)
     if x == '7':
         pass
     else:
@@ -475,4 +476,4 @@ def __main__():
 
 
 
-__main__()
+#token = __main__()
