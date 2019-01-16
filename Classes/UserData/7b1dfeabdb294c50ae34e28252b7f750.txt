@@ -4,15 +4,6 @@
 1
 1
 0
-Kettle!17-01-2019£2
-Kettle!18-01-2019£2
-Kettle!19-01-2019£2
-Kettle!17-01-2019£2
-Kettle!18-01-2019£2
-Kettle!19-01-2019£2
-Kettle!27-01-2019£2
-Kettle!28-01-2019£2
-Kettle!29-01-2019£2
 Scissors!18-01-2019£200
 Scissors!19-01-2019£200
 Scissors!20-01-2019£200
@@ -44,3 +35,17 @@ Water Cutter!28-01-2019£250
 Water Cutter!29-01-2019£250
 Water Cutter!30-01-2019£250
 Water Cutter!31-01-2019£250
+Generator!20-01-2019£500
+Generator!21-01-2019£500
+Generator!22-01-2019£500
+Generator!23-01-2019£500
+Generator!24-01-2019£500
+Generator!25-01-2019£500
+Generator!26-01-2019£500
+Generator!27-01-2019£500
+Generator!28-01-2019£500
+Generator!29-01-2019£500
+Generator!30-01-2019£500
+Generator!31-01-2019£500
+Generator!01-02-2019£500
+Generator!02-02-2019£500

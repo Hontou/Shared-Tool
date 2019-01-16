@@ -1,0 +1,10 @@
+1's invoice of month 01 in year 2020
+Tool Hire Charges:
+
+Delivery Costs:
+£0
+Subtotal:
+£0
+Additional Insurance Cost: £5
+Grand Total:
+£5

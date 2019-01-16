@@ -50,7 +50,7 @@ class SharedTool(tk.Tk): #Initializer
         
         self.frames = {}
 
-        for F in (StartPage, Logged, RegisterPage, RegisterToolPage, SearchToolPage):
+        for F in (StartPage, Logged, RegisterPage, RegisterToolPage, SearchToolPage, InvoicePage,ReturnToolPage):
             
             frame = F(container, self)
             
@@ -196,7 +196,7 @@ class Logged(tk.Frame):
         button3.place(rely=1.0, relx=0, x=86, y=0, anchor=tk.SW)
 #######################################################
         button4 = ttk.Button(self, text="Invoice",
-                            command= False)
+                            command=lambda: controller.show_frame(InvoicePage))
         button4.place(rely=1.0, relx=0, x=255, y=0, anchor=tk.SW)
 ####################################################### 
         button5 = ttk.Button(self, text="Create Tool",
@@ -206,7 +206,11 @@ class Logged(tk.Frame):
         button6 = ttk.Button(self, text="Quit",
                             command=quit)
         button6.place(rely=1.0, relx=1.0, x=0, y=0, anchor=tk.SE)
-#######################################################   
+#######################################################
+        button7 = ttk.Button(self, text="Return Tool",
+                            command=lambda: controller.show_frame(ReturnToolPage))
+        button7.place(rely=1.0, relx=0, x=340, y=0, anchor=tk.SW)
+####################################################### 
 
     def grabtoken():
             stored = []
@@ -227,7 +231,138 @@ class Logged(tk.Frame):
             if file.endswith('.txt'):
                 os.remove(filePath+file)            
 
+class InvoicePage(tk.Frame):
+    def __init__(self, parent, controller):
+        ttk.Frame.__init__(self,parent)
+        label = ttk.Label(self, text="Stored Tools", font=("Verdana", 12))
+        label.grid(row=0, column=0, sticky=tk.W)
+        Style().configure("TButton", padding=(0, 5, 0, 5), font='serif 9')
+        def backtologged():
+            try:
+                f = open('TempData/login.txt')
+                f.close()
+                controller.show_frame(Logged)
+            except FileNotFoundError:
+                controller.show_frame(StartPage)
 
+        
+        button1 = ttk.Button(self, text="Back to Main",
+                            command=lambda: backtologged())
+        button1.place(rely=0, relx=1.0, x=0, y=0, anchor=tk.NE)
+      
+        button2 = ttk.Button(self, text="Quit",
+                            command=quit)
+        button2.place(rely=1.0, relx=1.0, x=0, y=0, anchor=tk.SE)
+
+        emptybox = ttk.Label(self, text="")
+        emptybox.grid(row=1, column=0)
+
+        monthlabel = ttk.Label(self, text="Month of Invoice")
+        monthlabel.grid(row=2, column=0)
+
+        yearlabel = ttk.Label(self, text="Year of Invoice")
+        yearlabel.grid(row=2, column=1)
+        
+        month = tk.StringVar(self)
+        month.set("Month")
+        monthbox = tk.OptionMenu(self, month, "01", "02", "03",
+                       "04", "05", "06",
+                       "07", "08", "09",
+                       "10", "11", "12")
+        monthbox.grid(row=3, column=0, sticky=tk.W)
+        
+        year = tk.StringVar(self)
+        year.set("Year")
+        yearbox = tk.OptionMenu(self, year, "2019", "2020", "2021",
+                       "2022", "2023", "2024", "2025")
+        yearbox.grid(row=3, column=1)
+        
+        
+        produce_invoice = ttk.Button(self, text="Produce Invoice",
+                                     command=lambda: invoice(month.get(),year.get()))
+        
+        produce_invoice.place(rely=1.0, relx=0, x=0, y=0, anchor=tk.SW)
+
+        def invoice(month, year):
+            check_month = isinstance(int(month), int)
+            check_year = isinstance(int(year), int)
+            if check_month == True and check_year == True:
+                f = open('TempData/login.txt', "r")
+                login_data = f.readlines()
+                f.close()
+
+                hireTools = []
+                tempL = []
+                allTool = []
+                hireCost = []
+                finalCost = []
+                count = 0
+                user_id = login_data[0].replace("\n", "")
+                tMY = str(month) + "-" + str(year)
+                print(tMY)
+                f=open("UserData/" + user_id + ".txt", "r")
+                for line in f:
+                    if "!" in line:
+                        if tMY in line:
+                            l = line.replace("\n", "")
+                            splitO = l.split("!")
+                            tool = splitO[0]
+                            datePrice = splitO[1].split("£")
+                            tempL.append([tool, datePrice[1]])
+                            allTool.append(tool)
+                f.close 
+
+                for x in tempL:
+                    tool = x[0]
+                    cost = x[1]
+                    if tool not in hireTools:
+                        hireTools.append(tool)
+                        hireCost.append(cost)
+                toolQuanDict = {i:allTool.count(i) for i in allTool}    
+                
+                while count < len(hireTools):
+                    x = int(toolQuanDict[hireTools[count]]) * int(hireCost[count])
+                    finalCost.append(x)
+                    count += 1
+
+                f = open("UserData/" + user_id + ".txt", "r")
+                data = f.readlines()
+                f.close
+
+                grandTot = 0
+                count = 0
+                for line in hireTools:
+                    grandTot = grandTot + finalCost[count]
+                    count += 1
+                grandTot = grandTot + int(data[5].replace("\n", ""))
+                count = 0
+                
+                f=open("InvoiceData/" + month + year + user_id + ".txt", "w")
+                f.writelines(data[2].replace("\n", "") + "'s invoice of month " + month + " in year " + year)
+                f.writelines("\nTool Hire Charges:\n")
+                for line in hireTools:
+                    f.writelines(hireTools[count] + " £" + str(finalCost[count]) + "\n")
+                    count += 1
+                f.writelines("\nDelivery Costs:\n£" + data[5])
+                f.writelines("Subtotal:\n£" + str(grandTot) + "\n")
+                f.writelines("Additional Insurance Cost: £5\n")
+                grandTot += 5
+                f.writelines ("Grand Total:\n£" + str(grandTot))
+                f.close()
+                f=open("InvoiceData/" + month + year + user_id + ".txt", "r")
+                data = f.readlines()
+                listbox = tk.Listbox(self, width=40, height=12)
+                listbox.grid(row=4, column=2)
+                for i in  reversed(data):
+                    listbox.insert(0, i.replace("\n", ""))
+                f.close()
+            else:
+                tm.showerror("Error", "Please enter a value.")
+                controller.show_frame(InvoicePage)
+            
+            
+
+        
 class SearchToolPage(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -564,7 +699,10 @@ class RegisterPage(tk.Frame): #Logged In Page
                 tm.showerror("Error", "Parameter(s) not entered.")
 
         
-##############################################################################################
+class ReturnToolPage(tk.Frame):
+
+    def __init__(self, parent, controller):
+        ttk.Frame.__init__(self, parent)
 
 Logged.deletetoken()
 
