@@ -28,7 +28,6 @@ def AllUsers():
 def grabtemp(x,line):
     f = open("TempData/" + str(x) + ".txt", "r")
     data = f.readlines()
-    print(data[int(line)])
     return data[int(line)]
 
 
@@ -118,6 +117,9 @@ class StartPage(tk.Frame): #Start Page
                             command=quit)
         button6.place(rely=1.0, relx=1.0, x=0, y=0, anchor=tk.SE)
 #######################################################
+        button7 = ttk.Button(self, text="Return Tool",
+                            command=lambda: failedlogin())
+        button7.place(rely=1.0, relx=0, x=340, y=0, anchor=tk.SW)
 
         def failedlogin():
             tm.showerror("Error", "Please login/register an account before trying to access.")
@@ -621,7 +623,7 @@ class RegisterPage(tk.Frame): #Logged In Page
         ttk.Frame.__init__(self, parent)
         label = ttk.Label(self, text="Logged In", font=LARGE_FONT)
         label.place
-        label = ttk.Label(self, text="Stored Tools ", font=("Verdana", 12))
+        label = ttk.Label(self, text="Shared Power", font=("Verdana", 12))
         label.grid(row=0, column=0, sticky=tk.W)
         Style().configure("TButton", padding=(0, 5, 0, 5), font='serif 9')
 
@@ -703,6 +705,105 @@ class ReturnToolPage(tk.Frame):
 
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
+        
+        label = ttk.Label(self, text="Shared Power", font=("Verdana", 12))
+        label.grid(row=0, column=0, sticky=tk.W)
+        Style().configure("TButton", padding=(0, 5, 0, 5), font='serif 9')
+
+        def backtologged():
+            try:
+                f = open('TempData/login.txt')
+                f.close()
+                controller.show_frame(Logged)
+            except FileNotFoundError:
+                controller.show_frame(StartPage)
+        
+####################################################### 
+        button1 = ttk.Button(self, text="Back to Main",
+                            command=lambda:backtologged())
+        button1.place(rely=0, relx=1.0, x=0, y=0, anchor=tk.NE)
+#######################################################       
+        button6 = ttk.Button(self, text="Quit",
+                            command=quit)
+        button6.place(rely=1.0, relx=1.0, x=0, y=0, anchor=tk.SE)
+#######################################################
+        
+        moreinfo_search = ttk.Button(self, text="Remove Item",
+                                     command= lambda: returnItem(listbox.get(tk.ACTIVE)))
+        moreinfo_search.grid(row=6, column=1)
+        
+        emptytext = ttk.Label(self, text="")
+        emptytext.grid(row=2,column=0)
+        maintext = ttk.Label(self, text="Search Input:", font=("Verdana", 10))
+        maintext.grid(row=3, column=0, sticky=tk.W)   
+        search_entry = tk.Entry(self,width=40)
+        search_entry.grid(row=4, column=0, sticky=tk.W)
+        search_button = ttk.Button(self,text="Search",
+                                  command= lambda: searchhiredtool(search_entry.get()))
+        search_button.grid(row=4, column=1, sticky=tk.W)
+        emptytext = ttk.Label(self, text="")
+        emptytext.grid(row=5,column=0)
+        listbox = tk.Listbox(self,width=30)
+        listbox.grid(row=6,column=0)
+
+        
+        def searchhiredtool(search_entry):
+            listoffoundtools = []
+            startingline = 0
+            listbox.delete(0, tk.END)
+            search_entry=search_entry.lower()
+            filePath = User.Path('userdata')
+            storeduser = grabtemp('login',0)
+            f = open(filePath + storeduser.replace("\n", "") + ".txt", "r")
+            data = f.readlines()
+            f.close()
+            
+            for line in data:
+                if line in (line for line in data if not line.startswith('[')):
+                    if "!" in line:
+                        splitter = line.split("!")
+                        if splitter[0] not in listoffoundtools:
+                            listoffoundtools.append(splitter[0])
+                            listbox.insert(0, splitter[0])
+                else:
+                    pass
+
+        def returnItem(item):
+            storeduser = grabtemp('login',0)
+            f=open("UserData/" + storeduser.replace("\n", "") + ".txt", "r")
+            user_data = f.readlines()
+            f.close
+            filterS = item + "!"
+            cTool = [item]
+            allDat = []
+            for line in user_data:
+                if filterS in line:
+                    allDat.append("[Returned]" + line)
+                    eSplit = line.split("!")
+                    pSplit = eSplit[1]
+                    date = pSplit.split("£")
+                    cTool.append(date[0])
+
+            f=open("UserData/" + storeduser.replace("\n", "") + ".txt", "w")
+            count = 0
+            for line in user_data:
+                if not filterS in line:
+                    f.writelines(line)
+                if filterS in line:
+                    f.writelines(allDat[count])
+                    count += 1
+                    
+            printStr = ""
+            counter = 0
+            for i in cTool:
+                printStr = printStr + "\n" + str(cTool[counter])
+                counter += 1
+            tm.showinfo("Removed", "These are removed dates for: "+printStr)
+            controller.show_frame(Logged)
+            
+                
+            
+            
 
 Logged.deletetoken()
 
