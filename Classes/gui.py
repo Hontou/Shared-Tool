@@ -26,7 +26,7 @@ def AllUsers():
 def grabtemp(x,line):
     f = open("TempData/" + str(x) + ".txt", "r")
     data = f.readlines()
-    return data[int(line)]
+    return data[int(line)] #This returns a line from a file in TempData
 
 
         
@@ -262,95 +262,103 @@ class InvoicePage(tk.Frame):
         monthbox = tk.OptionMenu(self, month, "01", "02", "03",
                        "04", "05", "06",
                        "07", "08", "09",
-                       "10", "11", "12")
+                       "10", "11", "12") #Option menu for selecting a month to view
         monthbox.grid(row=3, column=0, sticky=tk.W)  
         year = tk.StringVar(self)
         year.set("Year")
         yearbox = tk.OptionMenu(self, year, "2019", "2020", "2021",
-                       "2022", "2023", "2024", "2025")
+                       "2022", "2023", "2024", "2025") #Options have up to year 2025 to future proof, can be changed to automatically add more years in a future edition
         yearbox.grid(row=3, column=1)
         
         
         produce_invoice = ttk.Button(self, text="Produce Invoice",
-                                     command=lambda: invoice(month.get(),year.get()))  
+                                     command=lambda: invoice(month.get(),year.get())) #Calls invoice() and passes in 2 parameters, month and year 
         produce_invoice.place(rely=1.0, relx=0, x=0, y=0, anchor=tk.SW)
 
 
         def invoice(month, year):
-            check_month = isinstance(int(month), int)
+            #Next 2 lines check if the month and year are integers, the relating variable is set to true if they are 
+            check_month = isinstance(int(month), int) 
             check_year = isinstance(int(year), int)
+            #if they are both true then it runs this section 
             if check_month == True and check_year == True:
-                f = open('TempData/login.txt', "r")
-                login_data = f.readlines()
-                f.close()
+                f = open('TempData/login.txt', "r")#Opens login from TempData, this file is a constant so long as the user is longed in
+                login_data = f.readlines()#saves the line by line to a list called login_data
+                f.close()#closes file
 
+                #Initiates several lists to store data for the next sections
                 hireTools = []
                 tempL = []
                 allTool = []
                 hireCost = []
                 finalCost = []
+                #Makes a counter variable
                 count = 0
-                user_id = login_data[0].replace("\n", "")
-                tMY = str(month) + "-" + str(year)
-                print(tMY)
-                f=open("UserData/" + user_id + ".txt", "r")
-                for line in f:
-                    if "!" in line:
-                        if tMY in line:
-                            l = line.replace("\n", "")
-                            splitO = l.split("!")
-                            tool = splitO[0]
-                            datePrice = splitO[1].split("£")
-                            tempL.append([tool, datePrice[1]])
-                            allTool.append(tool)
-                f.close 
+                #login_data[0] is the first line on the login file. This is the users unique number
+                user_id = login_data[0].replace("\n", "")#The .replace("\n", "") gets rid of the \n on the end of the file that is used as an enter key so that we can use the users ID
+                tMY = str(month) + "-" + str(year)#Adds the month and year together in a format of MM-YYYY
+                f=open("UserData/" + user_id + ".txt", "r")#Opens the users file
+                for line in f:#For every line in file
+                    if "!" in line:#If there is an ! in the line
+                        if tMY in line:#If the month and year inputted is in the line
+                            l = line.replace("\n", "")#Takes the \n off so that we can use the info
+                            splitO = l.split("!")#SplitO becomes a list containing everything before the ! as the first item in the list + everything after the ! as the second item in the list
+                            tool = splitO[0]#Tool is the first item. This is because line would look something like this: Hammer!USERID£20
+                            datePrice = splitO[1].split("£")#This splits the second item in the list at the £ into a new list which has userID as the first item + hire cost as the second
+                            tempL.append([tool, datePrice[1]])#Appends tool and hire cost to a list
+                            allTool.append(tool)#Adds just tool to list
+                f.close #closes file
 
-                for x in tempL:
-                    tool = x[0]
-                    cost = x[1]
-                    if tool not in hireTools:
-                        hireTools.append(tool)
-                        hireCost.append(cost)
-                toolQuanDict = {i:allTool.count(i) for i in allTool}    
+                for x in tempL:#For item in tempL (list)
+                    #tempL is a list containing lists. e.g. [[tool], [hirecost],[tool], [hirecost]]
+                    tool = x[0]#Tool is equal to the first item in that section
+                    cost = x[1]#Cost is equal to second item of that section
+                    if tool not in hireTools:#If the tool is NOT in list hireTools
+                        hireTools.append(tool)#add tool to hireTools (list)
+                        hireCost.append(cost)#add cost to hireCost (list)
+                toolQuanDict = {i:allTool.count(i) for i in allTool}#Makes a dictionary that would display like the example below
+                #Hammer:4, Screwdriver:2 
                 
-                while count < len(hireTools):
-                    x = int(toolQuanDict[hireTools[count]]) * int(hireCost[count])
-                    finalCost.append(x)
-                    count += 1
+                while count < len(hireTools):#this is a loop we use while counter is less than the length of hireTools
+                    x = int(toolQuanDict[hireTools[count]]) * int(hireCost[count])#x is equal to the amount of a type of tool times by the hire cost of said tool
+                    finalCost.append(x)#adds x to finalCost (list)
+                    count += 1#increments count by 1
 
+                #opens user file and stores all their lines in data (list)
                 f = open("UserData/" + user_id + ".txt", "r")
                 data = f.readlines()
                 f.close
 
-                grandTot = 0
-                count = 0
-                for line in hireTools:
-                    grandTot = grandTot + finalCost[count]
-                    count += 1
-                grandTot = grandTot + int(data[5].replace("\n", ""))
-                count = 0
+                grandTot = 0#declare grandTot (basepoint 0)
+                count = 0#reset count
+                for line in hireTools:#For each item in hireTools
+                    grandTot = grandTot + finalCost[count]#grandTot gets each line of finalCost (list) added to it (final cost has the total hire cost of each item)
+                    count += 1#count increment by 1
+                grandTot = grandTot + int(data[5].replace("\n", ""))#This then adds delivery cost (stored on user file) to the grandTot
+                count = 0#reset count
                 
-                f=open("InvoiceData/" + month + year + user_id + ".txt", "w")
-                f.writelines(data[2].replace("\n", "") + "'s invoice of month " + month + " in year " + year)
-                f.writelines("\nTool Hire Charges:\n")
-                for line in hireTools:
-                    f.writelines(hireTools[count] + " £" + str(finalCost[count]) + "\n")
-                    count += 1
-                f.writelines("\nDelivery Costs:\n£" + data[5])
-                f.writelines("Subtotal:\n£" + str(grandTot) + "\n")
-                f.writelines("Additional Insurance Cost: £5\n")
-                grandTot += 5
-                f.writelines ("Grand Total:\n£" + str(grandTot))
-                f.close()
-                f=open("InvoiceData/" + month + year + user_id + ".txt", "r")
+                f=open("InvoiceData/" + month + year + user_id + ".txt", "w")#Opens/Creates file in InvoiceData with the name of file as month+year+userID (example on line below)
+                #012019USERID.txt
+                f.writelines(data[2].replace("\n", "") + "'s invoice of month " + month + " in year " + year)#Writes the second line of data (list) + explanatory text + the month + year
+                f.writelines("\nTool Hire Charges:\n")#adds a line stating that the following is Hire Charges
+                for line in hireTools:#For item in hireTools (list)
+                    f.writelines(hireTools[count] + " £" + str(finalCost[count]) + "\n")#Write a line that has the tool inputed then £ symbol (to use as identifier) then the total cost of that item
+                    count += 1#increment count by 1
+                f.writelines("\nDelivery Costs:\n£" + data[5])#Adds a line stating that the following is delivery costs, data[5] is the delivery cost
+                f.writelines("Subtotal:\n£" + str(grandTot) + "\n")#Adds the subtotal to show to user
+                f.writelines("Additional Insurance Cost: £5\n")#informs them of monthly £5 charge
+                grandTot += 5#adds 5 
+                f.writelines ("Grand Total:\n£" + str(grandTot))#Shows them the grand total
+                f.close()#closes file
+                f=open("InvoiceData/" + month + year + user_id + ".txt", "r")#reopens file and stores every line in data (list)
                 data = f.readlines()
-                listbox = tk.Listbox(self, width=40, height=12)
+                listbox = tk.Listbox(self, width=40, height=12)#Creates listbox
                 listbox.grid(row=4, column=2)
-                for i in  reversed(data):
-                    listbox.insert(0, i.replace("\n", ""))
-                f.close()
+                for i in  reversed(data):#for item in data (reversed list)
+                    listbox.insert(0, i.replace("\n", ""))#Insert into the listbox each line minus the \n's 
+                f.close()#closes
             else:
-                tm.showerror("Error", "Please enter a value.")
+                tm.showerror("Error", "Please enter a value.")#error validation
                 controller.show_frame(InvoicePage)
             
             
@@ -428,25 +436,26 @@ class SearchToolPage(tk.Frame):
             output_file.close()
             try:
                 f = open('TempData/login.txt')
-                user_id = f.readlines()
+                user_id = f.readlines()#saves login info
                 f.close()
                 myfile = open('TempData/activetool.txt', 'r')
-                data = myfile.readlines()
+                data = myfile.readlines()#saves selected tool info
 
                 '''Writes the tool information out in one line of the program.'''
-                
+                #adds a label that displays tool name, brand, cost and owner.
                 toolInfo = tk.Label(self,text='Tool Name: {0} | Tool Brand: {1}\n'.format(data[0].replace("\n", ""),
                                                                                           data[1].replace("\n", "")) +
                                     'Hire Cost: {0} | Tool Owner: {1}'.format(data[2].replace("\n", ""),
                                                                                           ownerInformation(data[3]).replace("\n", "")))
 
                 temp = []
-                for item in data:
-                    if "2019 " in item:
-                        temp.append(item.replace(" \n", ""))#not future proofed as of yet, 2019 and 2020 only.
-                    elif "2020 " in item:
+                for item in data:#for item in data (list)
+                    #not future proofed as of yet, 2019 and 2020 only.
+                    if "2019 " in item:#If 2019 in item add to list the item without \n
                         temp.append(item.replace(" \n", ""))
-                        
+                    elif "2020 " in item:#If 2020 in item add to list the item without \n
+                        temp.append(item.replace(" \n", ""))
+                #sets the list of dates selected (unhired) as a dropdown
                 listofdays = tk.StringVar(self)
                 listofdays.set(temp[0])
                 listofdays.set("Booking Start Date")
@@ -458,53 +467,64 @@ class SearchToolPage(tk.Frame):
                 booking_var.set("Booking End Date")
                 bookAmount = tk.OptionMenu(self, booking_var, *temp)
                 bookAmount.place(rely=1, relx=1.0, x=-30, y=-204, anchor=tk.NE)
-                submit_button = ttk.Button(self, text="Submit",command=lambda: dateListGen(listofdays.get(), booking_var.get(), user_id[0], x)) 
+                submit_button = ttk.Button(self, text="Submit",command=lambda: dateListGen(listofdays.get(), booking_var.get(), user_id[0], x)) #Submits the data selected to the relevent places
                 submit_button.place(rely=1.0, relx=1.0, x=-60, y=0, anchor=tk.SE)
 
-                def dateListGen(start, end, user_id, tool_id):
+                def dateListGen(start, end, user_id, tool_id):#Takes the start, end, userID and toolID as parameters
+                    #Removes the space at the end of the lines
                     start = start.replace(" ", "")
                     end = end.replace(" ", "")
+                    #puts start and end into the datetime format
                     start = datetime.datetime.strptime(start, "%d-%m-%Y")
                     end = datetime.datetime.strptime(end, "%d-%m-%Y")
-                    trueEnd = (end-start).days + 1
-                    startEnd = [start + datetime.timedelta(days=x) for x in range(0, trueEnd)]
+                    trueEnd = (end-start).days + 1#add one to the amount end to start registers, otherwise misses a day
+                    startEnd = [start + datetime.timedelta(days=x) for x in range(0, trueEnd)]#Generates dates inbetween start and end
                     seList = []
-                    for x in startEnd:
+                    for x in startEnd:#for item in startEnd (list) adds to list line in datetime format
                         seList.append(x.strftime("%d-%m-%Y"))
-                    day(seList, user_id, tool_id)
+                    day(seList, user_id, tool_id)#passes parameters into day function
                     
-                def day(date_list, user_id, tool_id):
+                def day(date_list, user_id, tool_id):#receives parameters
+                    #removes \n from user and tool ID's
                     user_id = user_id.replace("\n", "")
                     tool_id = tool_id.replace("\n", "")
+                    #Opens user and tool files, stores data, closes files
                     f=open("UserData/" + user_id + ".txt", "r")
                     userTStore = f.readlines()
                     f.close
                     f=open("ToolData/" + tool_id + ".txt", "r")
                     data = f.readlines()
                     f.close
+                    #Opens tool again
                     f=open("ToolData/" + tool_id + ".txt", "r")
                     tempStore = []
-                    count = 0
-                    oor = len(date_list) - 1
+                    count = 0#makes a counter
+                    oor = len(date_list) - 1#oor stands for out of range. This is the error this variable prevents
+                    #For every line in the file
                     for line in f:
-                        ID = date_list[count]
-                        if not ID in line:
-                            tempStore.append(line)
-                        if ID in line:
-                            tempStore.append(ID + "#" + user_id + "$Hired\n")
-                            userTStore.append(tool_id + "!" + ID + "£" + data[2])
-                            if count < oor:
+                        ID = date_list[count]#ID is equal to the item in date_list that corrasponds to the number count currently is
+                        if not ID in line:#if not the ID in line
+                            tempStore.append(line)#add the line to tempStore (list)
+                        if ID in line:#if the ID is in line 
+                            tempStore.append(ID + "#" + user_id + "$Hired\n")#add to tempStore the ID plus identifiers and additional information
+                            userTStore.append(tool_id + "!" + ID + "£" + data[2])#add to userTStore toolID plus identifiers and additional information
+                            if count < oor:#also prevents out of range
                                 count += 1
                     f.close
+                    #writes the lists made to the files that follow
                     f=open("ToolData/" + tool_id + ".txt", "w")
                     f.writelines(tempStore)
                     f.close
                     f=open("UserData/" + user_id + ".txt", "w")
                     f.writelines(userTStore)
                     f.close
-                    tm.showinfo("Booked", "Tool has been hired to user: "+ user_id)
+                    tm.showinfo("Booked", "Tool has been hired to user: "+ user_id)#Shows to the user it has been hired
                     controller.show_frame(Logged)
-                    
+
+
+                #Unfortunately this section didnt work no matter what we tried.
+                #There was a part in it that was meant to open a file that 100% existed
+                #But would not open, we were told to just inform this here and leave out delivery
                 #def addDelCost(userID):
                 #    f=open("UserData/" + userID + ".txt", "r")
                 #    data = f.readlines()
@@ -553,7 +573,7 @@ class SearchToolPage(tk.Frame):
 
          
             except FileNotFoundError:
-                tm.showerror("Error", "Please login to access this page.")
+                tm.showerror("Error", "Please login to access this page.")#error message display if not logged in
                 controller.show_frame(StartPage)
     
             
@@ -714,7 +734,7 @@ class RegisterPage(tk.Frame): #Logged In Page
 
         password = ttk.Label(self, text="Password")
         password.grid(row=6, column=1, sticky=tk.W)
-        password_i = ttk.Entry(self)# [passwprd]
+        password_i = ttk.Entry(self)# [password]
         password_i.grid(row=7, column=1, sticky=tk.W)
         
 
@@ -793,7 +813,7 @@ class ReturnToolPage(tk.Frame):
         def searchhiredtool(search_entry):
             
             '''Check first searchtool above page, reposted function'''
-            
+
             listoffoundtools = []
             startingline = 0
             listbox.delete(0, tk.END)
@@ -804,13 +824,13 @@ class ReturnToolPage(tk.Frame):
             data = f.readlines()
             f.close()
             
-            for line in data:
-                if line in (line for line in data if not line.startswith('[')):
-                    if "!" in line:
-                        splitter = line.split("!")
-                        if splitter[0] not in listoffoundtools:
+            for line in data:#for item in data (list)
+                if line in (line for line in data if not line.startswith('[')):#Essentially if the line doesnt start with [
+                    if "!" in line:#and the line does have ! in it 
+                        splitter = line.split("!")#split by the ! identifier
+                        if splitter[0] not in listoffoundtools:#If the tool is not in listoffoundtools already, add it
                             listoffoundtools.append(splitter[0])
-                            listbox.insert(0, splitter[0])
+                            listbox.insert(0, splitter[0])#also adds to listbox
                 else:
                     pass
 
@@ -819,7 +839,7 @@ class ReturnToolPage(tk.Frame):
             f=open("UserData/" + storeduser.replace("\n", "") + ".txt", "r")
             user_data = f.readlines()#stores actual file into variable
             f.close
-            filterS = item + "!" #filters for any owned item and appends a returned to that item.
+            filterS = item + "!" #filters for any owned item and appends a [returned] to that item.
             cTool = [item]
             allDat = []
             for line in user_data:
@@ -832,7 +852,7 @@ class ReturnToolPage(tk.Frame):
 
             f=open("UserData/" + storeduser.replace("\n", "") + ".txt", "w")
             count = 0
-            for line in user_data:
+            for line in user_data:#rewrites the lines without the filter then when the filter is in line, writes the new version
                 if not filterS in line:
                     f.writelines(line)
                 if filterS in line:
@@ -841,10 +861,10 @@ class ReturnToolPage(tk.Frame):
                     
             printStr = ""
             counter = 0
-            for i in cTool:
+            for i in cTool:#printStr is a long string vraible that stores each item in cTool
                 printStr = printStr + "\n" + str(cTool[counter])
                 counter += 1
-            tm.showinfo("Removed", "These are removed dates for: "+printStr)
+            tm.showinfo("Removed", "These are removed dates for: "+printStr)#adds the contents of printStr onto the showinfo
             controller.show_frame(Logged)
             
                 
