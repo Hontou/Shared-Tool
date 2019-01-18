@@ -1,0 +1,11 @@
+1's invoice of month 01 in year 2019
+Tool Hire Charges:
+Water Pump £400
+
+Delivery Costs:
+£0
+Subtotal:
+£400
+Additional Insurance Cost: £5
+Grand Total:
+£405

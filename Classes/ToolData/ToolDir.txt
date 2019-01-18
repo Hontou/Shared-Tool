@@ -1,1 +1,9 @@
-Steel Claw Hammer
+Hammer
+Axe
+5000W Generator
+1000W Generator
+Scissors
+Nail Clipper
+Water Pump
+Air Vacuum
+1

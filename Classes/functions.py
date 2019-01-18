@@ -6,6 +6,11 @@ import datetime
 
 
 #REMOVE
+'''__main__ contains backend functions done throughout the programming stage.
+The functions were refirbished to be within the gui.py file.
+They are there as evidence towards programming within the early stages.
+
+run via gui'''
 
 def login():
     email = 'micharin99@gmail.com'
